@@ -12,77 +12,88 @@
     </div>
     <script>
         
-        var options = {
-          series: [
-          {
-            name: "Target", // modific dupa
-            data: [23, 32, 32, 100] // target time
-          },
-          {
-            name: "Rem", // modific dupa
-            data: [12, 11, 14, 18, 17, 13, 13]
-          }
-        ],
-          chart: {
-          height: 350,
-          type: 'line',
-          dropShadow: {
-            enabled: true,
-            color: '#000',
-            top: 18,
-            left: 7,
-            blur: 10,
-            opacity: 0.2
-          },
-          toolbar: {
-            show: false
-          }
-        },
-        colors: ['#77B6EA', '#545454'],
-        dataLabels: {
-          enabled: true,
-        },
-        stroke: {
-          curve: 'smooth'
-        },
-        title: {
-          text: 'Average Target & Rem time', // modificare dupa
-          align: 'left'
-        },
-        grid: {
-          borderColor: '#e7e7e7',
-          row: {
-            colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-            opacity: 0.5
-          },
-        },
-        markers: {
-          size: 1
-        },
-        xaxis: {
-          categories: [ 34, 43, 50 ], // time
-          title: {
-            text: 'Time'
-          }
-        },
-        yaxis: {
-          title: {
-            text: 'Time'
-          },
-          min: 5,
-          max: 40
-        },
-        legend: {
-          position: 'top',
-          horizontalAlign: 'right',
-          floating: true,
-          offsetY: -25,
-          offsetX: -5
-        }
+        getChart();
+        async function getChart() {
+            await getDataChart();
+            let categoriesChart = [];
+            let dataChart = [];
+            let remChart = [];
+            var options = {
+            series: [
+            {
+                name: "Target", // modific dupa
+                data: dataChart, // target time
+            },
+            {
+                name: "Rem", // modific dupa
+                data: remChart,
+            }
+            ],
+            chart: {
+                height: 350,
+                type: 'line',
+                dropShadow: {
+                    enabled: true,
+                    color: '#000',
+                    top: 18,
+                    left: 7,
+                    blur: 10,
+                    opacity: 0.2
+                },
+                toolbar: {
+                    show: false
+                }
+                },
+                colors: ['#77B6EA', '#545454'],
+                dataLabels: {
+                enabled: true,
+                },
+                stroke: {
+                curve: 'smooth'
+                },
+                title: {
+                text: 'Average Target & Rem time', // modificare dupa
+                align: 'left'
+                },
+                grid: {
+                borderColor: '#e7e7e7',
+                row: {
+                    colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                    opacity: 0.5
+                },
+                },
+                markers: {
+                size: 1
+                },
+                xaxis: {
+                categories: categoriesChart, // time
+                title: {
+                    text: 'Time'
+                }
+                },
+                yaxis: {
+                title: {
+                    text: 'Time'
+                },
+                    min: 5,
+                max: 40
+                },
+                legend: {
+                position: 'top',
+                horizontalAlign: 'right',
+                floating: true,
+                offsetY: -25,
+                offsetX: -5
+            }
         };
 
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
+            var chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+    }
+
+    async function getDataChart() {
+
+    }
       
     </script>
 </body>
