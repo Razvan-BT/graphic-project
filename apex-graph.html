@@ -14,16 +14,15 @@
     <div id="chart">
     </div>
     <script>
-    const INTERVAL_TIME = 5000;
 
     getChart();
     function getChart() {
+        const MAX_INT_TIME = 30;
         let checkIfAreThere = 0;
         let theHoursGet = 10;
         let categoriesChart = [ ]; // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-        let dataChart = [ ]; // blue line
+        let dataChart = [ 30, 60, 90]; // blue line
         let remChart = [ ]; // black line
-        
 
         // Time from X-Axis 
         for(let i = 0; i < getTimesArray(6, 17, 30).length; i++) {
@@ -31,14 +30,27 @@
             const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
             categoriesChart.push(result);
 
-            checkIfAreThere = categoriesChart.length;
         }
-
-        if(theHoursGet <  checkIfAreThere) 
-            theHoursGet = theHoursGet * 10;
-
+        //console.warn(dataChart.length);
+        /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
+        for(let i = 0; i <= dataChart.length; i++) checkIfAreThere = i;
         
+        if(theHoursGet > 0) 
+            theHoursGet += (checkIfAreThere * MAX_INT_TIME);
 
+        /* Calculate time half on half hour (remain minutes) */
+      
+        if(dataChart.length >= 1) {
+            for(let i = 0; i < categoriesChart.length; i++) {
+                if(dataChart[i] === categoriesChart[i]) {
+                    
+                    console.log('Not succesfully...');
+                }
+            }
+        }
+    
+
+        /* Ajax Chart.js */ 
         var options = {
         series: [ {
             name: "Target",
@@ -108,10 +120,6 @@
     chart.render();
 }
 
-    // Update log on every X seconds set from INTERVAL_TIME.
-    setInterval(getTimeWorked, INTERVAL_TIME);
-
-    /* This function get time from eg. 6 to 17, in length equal with ... 30 minutes. 6:00, 6:30 ... 17:00*/
     function getTimesArray(start, end, length) {
         let startMin = start * 60
         let endMin = end * 60
@@ -140,11 +148,7 @@
 
         return s;
     };
-
-    function getTimeWorked() {
-        let calculateTimeWorked = (360/480);
-    }
-
+    
     // var toHHMMSS = (secs) => {
     // var sec_num = parseInt(secs, 10)
     // var hours   = Math.floor(sec_num / 3600)
