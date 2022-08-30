@@ -14,28 +14,30 @@
     <div id="chart">
     </div>
     <script>
+    const INTERVAL_TIME = 5000;
+
     getChart();
     function getChart() {
-        let theHoursGet = 0;
+        let checkIfAreThere = 0;
+        let theHoursGet = 10;
         let categoriesChart = [ ]; // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-        let dataChart = [ 21 , 10, 15, 20, 25, 30 ]; // blue line
-        let remChart = [2, 10, 15, 20, 25, 30 ]; // black line
+        let dataChart = [ ]; // blue line
+        let remChart = [ ]; // black line
         
+
+        // Time from X-Axis 
         for(let i = 0; i < getTimesArray(6, 17, 30).length; i++) {
-
-            /* Send to console all length array with time from 06:00 to 17:00 */
-            console.log(getTimesArray(6, 17, 30)[i]);
-            console.log(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i]));
-
-           // categoriesChart.push(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])));
-
-            theHoursGet = i;
 
             const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
             categoriesChart.push(result);
+
+            checkIfAreThere = categoriesChart.length;
         }
 
+        if(theHoursGet <  checkIfAreThere) 
+            theHoursGet = theHoursGet * 10;
 
+        
 
         var options = {
         series: [ {
@@ -84,7 +86,7 @@
         xaxis: {
             categories: categoriesChart, // time
             title: {
-                text: 'Time (6:00 - 6:30)'
+                text: 'Time X-Axis (6:00 - 14:30)'
             }
         },
         yaxis: {
@@ -92,7 +94,7 @@
             text: 'Time'
         },
             min: 0,
-            max: (theHoursGet + 1)  // set averange
+            max: theHoursGet  // set averange
         },
             legend: {
             position: 'top',
@@ -105,6 +107,9 @@
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
 }
+
+    // Update log on every X seconds set from INTERVAL_TIME.
+    setInterval(getTimeWorked, INTERVAL_TIME);
 
     /* This function get time from eg. 6 to 17, in length equal with ... 30 minutes. 6:00, 6:30 ... 17:00*/
     function getTimesArray(start, end, length) {
@@ -123,6 +128,7 @@
         return times
     };
 
+    /* Return hours, minutes or seconds in only seconds. */
     function hmsToSecondsOnly(strComm) {
         var p = strComm.split(':'),
             s = 0, m = 1;
@@ -133,28 +139,33 @@
         }
 
         return s;
+    };
+
+    function getTimeWorked() {
+        let calculateTimeWorked = (360/480);
     }
 
-    var toHHMMSS = (secs) => {
-    var sec_num = parseInt(secs, 10)
-    var hours   = Math.floor(sec_num / 3600)
-    var minutes = Math.floor(sec_num / 60) % 60
-    var seconds = sec_num % 60
+    // var toHHMMSS = (secs) => {
+    // var sec_num = parseInt(secs, 10)
+    // var hours   = Math.floor(sec_num / 3600)
+    // var minutes = Math.floor(sec_num / 60) % 60
+    // var seconds = sec_num % 60
 
-        return [hours,minutes,seconds]
-            .map(v => v < 10 ? "0" + v : v)
-            .filter((v,i) => v !== "00" || i > 0)
-            .join(":")
-    }
+    //     return [hours,minutes,seconds]
+    //         .map(v => v < 10 ? "0" + v : v)
+    //         .filter((v,i) => v !== "00" || i > 0)
+    //         .join(":")
+    // }
 
-    console.log(toHHMMSS(23400));
-    //console.log(getTimesArray(6, 17, 30))
-    //console.log(getTimesArray(4,8, 110))
+    // console.log(toHHMMSS(23400));
+    // console.log(getTimesArray(6, 17, 30))
+    // console.log(getTimesArray(4,8, 110))
+    // const seconds = 21660;
+    // const result = new Date(seconds * 1000).toISOString().slice(11, 19);
+    // console.log(typeof result); // debug "00:10:00" (hh:mm:ss)
 
-    const seconds = 21660;
-    const result = new Date(seconds * 1000).toISOString().slice(11, 19);
-    console.log(typeof result); // 👉️ "00:10:00" (hh:mm:ss)
-
+    // Task:
+    // array > creste y Axis > proces calcul (360 / 480) * (minute from x Axys)
     </script>
 </body>
 </html>
