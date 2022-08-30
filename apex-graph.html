@@ -21,7 +21,8 @@
         let checkIfAreThere = 0;
         let theHoursGet = 10;
         let categoriesChart = [ ]; // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-        let dataChart = [ 30, 60, 90]; // blue line
+        let categoriesChartTimeInSec = [ ];
+        let dataChart = [ ]; // blue line
         let remChart = [ ]; // black line
 
         // Time from X-Axis 
@@ -30,6 +31,10 @@
             const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
             categoriesChart.push(result);
 
+
+            categoriesChartTimeInSec.push(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000);
+
+            //console.log(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])));
         }
         //console.warn(dataChart.length);
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
@@ -40,15 +45,34 @@
 
         /* Calculate time (remain minutes) */
       
-        if(dataChart.length >= 1) {
-            for(let i = 0; i < categoriesChart.length; i++) {
-                if(dataChart[i] === categoriesChart[i]) {
-                    
-                    console.log('Not succesfully...');
+        // if(dataChart.length >= 1) {
+        //     for(let i = 0; i < dataChart.length; i++) {
+        //         for(let j = 0; j < categoriesChart.length; j++) {
+
+        //             console.log(dataChart[i], categoriesChart[j]);
+        //         }
+        //     }
+        // }
+        
+        let todayDate = new Date ();
+        let hoursToday = todayDate.getHours();
+        let minutesToday = todayDate.getMinutes();
+        for(let i = 0; i < categoriesChartTimeInSec.length; i++) {
+            for(let j = 0; j < categoriesChart.length; j++) {
+                if(i === j) {
+                    if((hoursToday >= 6 && (hoursToday < 15 && minutesToday <= 31))) {
+                        console.warn('DEBUG: Check time between program.');
+
+                        
+
+
+                    }
+                    else {
+                        console.warn('DEBUG: Check time between program, failure.');
+                    }      
                 }
             }
         }
-    
 
         /* Ajax Chart.js */ 
         var options = {
