@@ -19,6 +19,7 @@
     function getChart() {
         const TIME_WORK = 9,
             SET_FIRSTHOUR = 6,
+            debug_status = true,
             MAX_INT_TIME = 30;
         let checkIfAreThere = 0,
             theHoursGet = 10,
@@ -31,29 +32,31 @@
 
             const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
             categoriesChart.push(result);
-
         }
 
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
-        for(let i = 0; i <= dataChart.length; i++) checkIfAreThere = i;
+        for(let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
         
-        if(theHoursGet > 0) 
-            theHoursGet += (checkIfAreThere * MAX_INT_TIME);
+        if(theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
 
+        if(debug_status) console.log("debug: dataChart: " +dataChart.length);
+        if(debug_status) console.log("debug: checkIfAreThere: " +checkIfAreThere);
+        
         let calculateTime = 0,
             time = new Date(), 
             calculateTimeBeta = 0;
+
         let calculateFunction = () => {
             let getTime = (((TIME_WORK * 2) * 1800) / 3600); // calculate at every 30 minutes.
             let timeForNowInMin = (getTime * 3600);
-            console.log("Time for now: " +timeForNowInMin / 60); // i change this in minutes -- reference at work space. 9 hours
+            if(debug_status ) console.log("debug: Time for now: " +timeForNowInMin / 60); // i change this in minutes -- reference at work space. 9 hours
 
-            calculateTimeBeta = (timeForNowInMin - 480); // ramaining time.
-            console.log("BETA: " +calculateTimeBeta);
+            calculateTimeBeta = ((timeForNowInMin / 60) - 480); // ramaining time.
+            if(debug_status ) console.log("debug: BETA: " +calculateTimeBeta);
 
             calculateTime = ((360 / 480) * calculateTimeBeta);
             dataChart.push(calculateTime);
-            console.log(dataChart);
+            if(debug_status ) console.log("debug: calculateFunction(): dataChart.length " +dataChart.length);
         }
 
         if(time.getHours() >= SET_FIRSTHOUR) calculateFunction(); // auto start when hour is six.
