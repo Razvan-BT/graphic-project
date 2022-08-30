@@ -17,12 +17,12 @@
 
     getChart();
     function getChart() {
+        const TIME_WORK = 9;
         const SET_FIRSTHOUR = 6;
         const MAX_INT_TIME = 30;
         let checkIfAreThere = 0;
         let theHoursGet = 10;
         let categoriesChart = [ ]; // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-        let categoriesChartTimeInSec = [ ];
         let dataChart = [ ]; // blue line
         let remChart = [ ]; // black line
 
@@ -32,54 +32,7 @@
             const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
             categoriesChart.push(result);
 
-
-            categoriesChartTimeInSec.push(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i]));
-
-            //console.log(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])));
         }
-        console.log(categoriesChartTimeInSec);
-
-        // let converTimeInto = (from, inConv, params) => {
-        //     let time = 0;
-        //     switch(from) {
-        //         case 'minutes': {
-        //             if(inConv === 'hours') {
-        //                 time = (params / 60);
-        //                 return time;
-        //             }
-        //             else if(inConv === 'seconds') {
-        //                 time = (params / 60);
-        //                 return time;
-        //             }
-        //             else return false;
-        //             break;
-        //         }
-        //         case 'hours': {
-        //             if(inConv === 'minutes') {
-
-        //             }
-        //             else if(inConv === 'seconds') {
-                        
-        //             }
-        //             else return false
-        //             break;
-        //         }
-        //         case 'seconds': {
-        //             if(inConv === 'hours') {
-
-        //             }
-        //             else if(inConv === 'minutes') {
-                        
-        //             }
-        //             return return false
-        //             break;
-        //         }
-        //     }
-        // }
-
-        // console.log(convertTimeInto(hours, minutes, 21600));
-        //console.warn(dataChart.length);
-
 
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
         for(let i = 0; i <= dataChart.length; i++) checkIfAreThere = i;
@@ -87,47 +40,21 @@
         if(theHoursGet > 0) 
             theHoursGet += (checkIfAreThere * MAX_INT_TIME);
 
-        /* Calculate time (remain minutes) */
-      
-        // if(dataChart.length >= 1) {
-        //     for(let i = 0; i < dataChart.length; i++) {
-        //         for(let j = 0; j < categoriesChart.length; j++) {
+        let time = new Date();
+        let calculateTime = 0;
+        let calculateFunction = () => {
+            let getTime = ((TIME_WORK * 2) * 1800) / 3600; // calculate at every 30 minutes.
+            let timeForNowInMin = (getTime * 3600);
+            console.log(timeForNowInMin / 60); // i change this in minutes.
 
-        //             console.log(dataChart[i], categoriesChart[j]);
-        //         }
-        //     }
-        // }
-        
-        // let todayDate = new Date ();
-        // let hoursToday = todayDate.getHours();
-        // let minutesToday = todayDate.getMinutes();
-        // let lastHour = SET_FIRSTHOUR;
-        // for(let i = 0; i < categoriesChartTimeInSec.length; i++) {
-        //     for(let j = 0; j < categoriesChart.length; j++) {
-        //         if(i === j) {
-        //             if((hoursToday >= 6 && (hoursToday < 15 && minutesToday <= 31))) {
-        //                 console.warn('DEBUG: Check time between program.');
+            if(time.getHours() >= SET_FIRSTHOUR) {
+                calculateTime = ((360 / 480) * timeForNowInMin);
+                dataChart.push(calculateTime);
+            }
+        }
 
-        //                 if(hoursToday >= lastHour && minutesToday === 0) {
-        //                     lastHour = hoursToday;
+        if(time.getHours() >= SET_FIRSTHOUR) calculateFunction(); // auto start when hour is six.
 
-        //                     console.log(categoriesChartTimeInSec[i]); 
-        //                 }
-        //             }
-        //             else {
-        //                 console.warn('DEBUG: Check time between program, failure.');
-        //             } 
-                    
-        //             let checkIsDeleted = categoriesChartTimeInSec.shift();
-        //             console.log('First item was deleted: ', checkIsDeleted);
-
-        //             console.log('Items from group: ', categoriesChartTimeInSec);
-        //         }
-        //     }
-        // }
-
-
-        
         /* Ajax Chart.js */ 
         var options = {
         series: [ {
@@ -194,6 +121,7 @@
             offsetX: -5
         } 
     };
+
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
 }
@@ -227,6 +155,16 @@
         return s;
     };
     
+    //console.log((2 * 1800) / 3600); // ramane 18
+    /* Add all values from one array */
+    function getArraySum(a){
+        var total=0;
+        for(var i in a) { 
+            total += a[i];
+        }
+        return total;
+    }
+
     // var toHHMMSS = (secs) => {
     // var sec_num = parseInt(secs, 10)
     // var hours   = Math.floor(sec_num / 3600)
