@@ -17,6 +17,7 @@
 
     getChart();
     function getChart() {
+        const SET_FIRSTHOUR = 6;
         const MAX_INT_TIME = 30;
         let checkIfAreThere = 0;
         let theHoursGet = 10;
@@ -32,10 +33,12 @@
             categoriesChart.push(result);
 
 
-            categoriesChartTimeInSec.push(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000);
+            categoriesChartTimeInSec.push(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i]));
 
             //console.log(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])));
         }
+        console.log(categoriesChartTimeInSec);
+        
         //console.warn(dataChart.length);
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
         for(let i = 0; i <= dataChart.length; i++) checkIfAreThere = i;
@@ -54,25 +57,33 @@
         //     }
         // }
         
-        let todayDate = new Date ();
-        let hoursToday = todayDate.getHours();
-        let minutesToday = todayDate.getMinutes();
-        for(let i = 0; i < categoriesChartTimeInSec.length; i++) {
-            for(let j = 0; j < categoriesChart.length; j++) {
-                if(i === j) {
-                    if((hoursToday >= 6 && (hoursToday < 15 && minutesToday <= 31))) {
-                        console.warn('DEBUG: Check time between program.');
+        // let todayDate = new Date ();
+        // let hoursToday = todayDate.getHours();
+        // let minutesToday = todayDate.getMinutes();
+        // let lastHour = SET_FIRSTHOUR;
+        // for(let i = 0; i < categoriesChartTimeInSec.length; i++) {
+        //     for(let j = 0; j < categoriesChart.length; j++) {
+        //         if(i === j) {
+        //             if((hoursToday >= 6 && (hoursToday < 15 && minutesToday <= 31))) {
+        //                 console.warn('DEBUG: Check time between program.');
 
-                        
+        //                 if(hoursToday >= lastHour && minutesToday === 0) {
+        //                     lastHour = hoursToday;
 
+        //                     console.log(categoriesChartTimeInSec[i]); 
+        //                 }
+        //             }
+        //             else {
+        //                 console.warn('DEBUG: Check time between program, failure.');
+        //             } 
+                    
+        //             let checkIsDeleted = categoriesChartTimeInSec.shift();
+        //             console.log('First item was deleted: ', checkIsDeleted);
 
-                    }
-                    else {
-                        console.warn('DEBUG: Check time between program, failure.');
-                    }      
-                }
-            }
-        }
+        //             console.log('Items from group: ', categoriesChartTimeInSec);
+        //         }
+        //     }
+        // }
 
         /* Ajax Chart.js */ 
         var options = {
