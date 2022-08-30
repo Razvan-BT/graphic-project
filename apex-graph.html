@@ -27,14 +27,15 @@
             console.log(getTimesArray(6, 17, 30)[i]);
             console.log(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i]));
 
-            categoriesChart.push(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i]) / 3600.00));
+           // categoriesChart.push(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])));
 
             theHoursGet = i;
-            //categoriesChart.push(toHHMMSS(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])));
-            //dataChart.push([i]);
+
+            const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
+            categoriesChart.push(result);
         }
 
-        
+
 
         var options = {
         series: [ {
@@ -149,6 +150,10 @@
     console.log(toHHMMSS(23400));
     //console.log(getTimesArray(6, 17, 30))
     //console.log(getTimesArray(4,8, 110))
+
+    const seconds = 21660;
+    const result = new Date(seconds * 1000).toISOString().slice(11, 19);
+    console.log(typeof result); // 👉️ "00:10:00" (hh:mm:ss)
 
     </script>
 </body>
