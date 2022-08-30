@@ -38,8 +38,49 @@
             //console.log(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])));
         }
         console.log(categoriesChartTimeInSec);
-        
+
+        // let converTimeInto = (from, inConv, params) => {
+        //     let time = 0;
+        //     switch(from) {
+        //         case 'minutes': {
+        //             if(inConv === 'hours') {
+        //                 time = (params / 60);
+        //                 return time;
+        //             }
+        //             else if(inConv === 'seconds') {
+        //                 time = (params / 60);
+        //                 return time;
+        //             }
+        //             else return false;
+        //             break;
+        //         }
+        //         case 'hours': {
+        //             if(inConv === 'minutes') {
+
+        //             }
+        //             else if(inConv === 'seconds') {
+                        
+        //             }
+        //             else return false
+        //             break;
+        //         }
+        //         case 'seconds': {
+        //             if(inConv === 'hours') {
+
+        //             }
+        //             else if(inConv === 'minutes') {
+                        
+        //             }
+        //             return return false
+        //             break;
+        //         }
+        //     }
+        // }
+
+        // console.log(convertTimeInto(hours, minutes, 21600));
         //console.warn(dataChart.length);
+
+
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
         for(let i = 0; i <= dataChart.length; i++) checkIfAreThere = i;
         
@@ -85,6 +126,8 @@
         //     }
         // }
 
+
+        
         /* Ajax Chart.js */ 
         var options = {
         series: [ {
