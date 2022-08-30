@@ -17,14 +17,14 @@
 
     getChart();
     function getChart() {
-        const TIME_WORK = 9;
-        const SET_FIRSTHOUR = 6;
-        const MAX_INT_TIME = 30;
-        let checkIfAreThere = 0;
-        let theHoursGet = 10;
-        let categoriesChart = [ ]; // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-        let dataChart = [ ]; // blue line
-        let remChart = [ ]; // black line
+        const TIME_WORK = 9,
+            SET_FIRSTHOUR = 6,
+            MAX_INT_TIME = 30;
+        let checkIfAreThere = 0,
+            theHoursGet = 10,
+            categoriesChart = [ ], // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
+            dataChart = [ ], // blue line
+            remChart = [ ]; // black line
 
         // Time from X-Axis 
         for(let i = 0; i < getTimesArray(6, 17, 30).length; i++) {
@@ -40,17 +40,20 @@
         if(theHoursGet > 0) 
             theHoursGet += (checkIfAreThere * MAX_INT_TIME);
 
-        let time = new Date();
-        let calculateTime = 0;
+        let calculateTime = 0,
+            time = new Date(), 
+            calculateTimeBeta = 0;
         let calculateFunction = () => {
-            let getTime = ((TIME_WORK * 2) * 1800) / 3600; // calculate at every 30 minutes.
+            let getTime = (((TIME_WORK * 2) * 1800) / 3600); // calculate at every 30 minutes.
             let timeForNowInMin = (getTime * 3600);
-            console.log(timeForNowInMin / 60); // i change this in minutes.
+            console.log("Time for now: " +timeForNowInMin / 60); // i change this in minutes -- reference at work space. 9 hours
 
-            if(time.getHours() >= SET_FIRSTHOUR) {
-                calculateTime = ((360 / 480) * timeForNowInMin);
-                dataChart.push(calculateTime);
-            }
+            calculateTimeBeta = (timeForNowInMin - 480); // ramaining time.
+            console.log("BETA: " +calculateTimeBeta);
+
+            calculateTime = ((360 / 480) * calculateTimeBeta);
+            dataChart.push(calculateTime);
+            console.log(dataChart);
         }
 
         if(time.getHours() >= SET_FIRSTHOUR) calculateFunction(); // auto start when hour is six.
@@ -186,6 +189,14 @@
 
     // Task:
     // array > creste y Axis > proces calcul (360 / 480) * (minute from x Axys)
+
+
+    /*  
+    
+    - Trebuie sa fie calculata ora curenta.
+    - minutele ramase ---> scazute la ora curenta.
+        
+    */
     </script>
 </body>
 </html>
