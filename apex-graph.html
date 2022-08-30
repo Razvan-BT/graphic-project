@@ -4,31 +4,46 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <title>Document</title>
+    <title>Graphic</title>
+    <style>
+
+    </style>
 </head>
 <body>
 
     <div id="chart">
     </div>
     <script>
+    getChart();
+    function getChart() {
+        let theHoursGet = 0;
+        let categoriesChart = [ ]; // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
+        let dataChart = [ 21 , 10, 15, 20, 25, 30 ]; // blue line
+        let remChart = [2, 10, 15, 20, 25, 30 ]; // black line
         
-        getChart();
-        async function getChart() {
-            await getDataChart();
-            let categoriesChart = [];
-            let dataChart = [];
-            let remChart = [];
-            var options = {
-            series: [
-            {
-                name: "Target", // modific dupa
-                data: dataChart, // target time
-            },
-            {
-                name: "Rem", // modific dupa
-                data: remChart,
-            }
-            ],
+        for(let i = 0; i < getTimesArray(6, 17, 30).length; i++) {
+
+            /* Send to console all length array with time from 06:00 to 17:00 */
+            console.log(getTimesArray(6, 17, 30)[i]);
+            console.log(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i]));
+
+            categoriesChart.push(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i]) / 3600.00));
+
+            theHoursGet = i;
+            //categoriesChart.push(toHHMMSS(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])));
+            //dataChart.push([i]);
+        }
+
+        
+
+        var options = {
+        series: [ {
+            name: "Target",
+            data: dataChart, 
+        },{
+            name: "Rem", 
+            data: remChart,
+        } ],
             chart: {
                 height: 350,
                 type: 'line',
@@ -39,62 +54,102 @@
                     left: 7,
                     blur: 10,
                     opacity: 0.2
-                },
-                toolbar: {
+            },
+                    toolbar: {
                     show: false
-                }
-                },
-                colors: ['#77B6EA', '#545454'],
-                dataLabels: {
-                enabled: true,
-                },
-                stroke: {
-                curve: 'smooth'
-                },
-                title: {
-                text: 'Average Target & Rem time', // modificare dupa
-                align: 'left'
-                },
-                grid: {
-                borderColor: '#e7e7e7',
-                row: {
-                    colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-                    opacity: 0.5
-                },
-                },
-                markers: {
-                size: 1
-                },
-                xaxis: {
-                categories: categoriesChart, // time
-                title: {
-                    text: 'Time'
-                }
-                },
-                yaxis: {
-                title: {
-                    text: 'Time'
-                },
-                    min: 5,
-                max: 40
-                },
-                legend: {
-                position: 'top',
-                horizontalAlign: 'right',
-                floating: true,
-                offsetY: -25,
-                offsetX: -5
             }
-        };
+        },
+        colors: ['#77B6EA', '#545454'],
+            dataLabels: {
+            enabled: true,
+        },
+        stroke: {
+            curve: 'smooth'
+        },
+        title: {
+            text: 'Average Target & Rem time',
+            align: 'left'
+        },
+        grid: {
+            borderColor: '#e7e7e7',
+            row: {
+                colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                opacity: 0.5
+            },
+        },
+        markers: {
+            size: 1
+        },
+        xaxis: {
+            categories: categoriesChart, // time
+            title: {
+                text: 'Time (6:00 - 6:30)'
+            }
+        },
+        yaxis: {
+            title: {
+            text: 'Time'
+        },
+            min: 0,
+            max: (theHoursGet + 1)  // set averange
+        },
+            legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            floating: true,
+            offsetY: -25,
+            offsetX: -5
+        } 
+    };
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+}
 
-            var chart = new ApexCharts(document.querySelector("#chart"), options);
-            chart.render();
+    /* This function get time from eg. 6 to 17, in length equal with ... 30 minutes. 6:00, 6:30 ... 17:00*/
+    function getTimesArray(start, end, length) {
+        let startMin = start * 60
+        let endMin = end * 60
+        let times = []
+
+        while (startMin <= endMin){
+            let mins = startMin % 60
+            let hours = Math.floor(startMin / 60)
+            let sec = 0;
+            let timeString = hours.toString() + ":" +  mins.toString().padStart(2, '0') + ":" + sec.toString().padStart(2, '0')
+            times.push(timeString)
+            startMin += length
+        }
+        return times
+    };
+
+    function hmsToSecondsOnly(strComm) {
+        var p = strComm.split(':'),
+            s = 0, m = 1;
+
+        while (p.length > 0) {
+            s += m * parseInt(p.pop(), 10);
+            m *= 60;
+        }
+
+        return s;
     }
 
-    async function getDataChart() {
+    var toHHMMSS = (secs) => {
+    var sec_num = parseInt(secs, 10)
+    var hours   = Math.floor(sec_num / 3600)
+    var minutes = Math.floor(sec_num / 60) % 60
+    var seconds = sec_num % 60
 
+        return [hours,minutes,seconds]
+            .map(v => v < 10 ? "0" + v : v)
+            .filter((v,i) => v !== "00" || i > 0)
+            .join(":")
     }
-      
+
+    console.log(toHHMMSS(23400));
+    //console.log(getTimesArray(6, 17, 30))
+    //console.log(getTimesArray(4,8, 110))
+
     </script>
 </body>
 </html>
