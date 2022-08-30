@@ -34,6 +34,7 @@
             categoriesChart.push(result);
         }
 
+
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
         for(let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
         
@@ -49,16 +50,21 @@
         let calculateFunction = () => {
 
             /* Timp neschimbat / 8 ore. */
-            let getTime = (((TIME_WORK * 2) * 1800) / 3600); // calculate at every 30 minutes.
+            let getTime = (((TIME_WORK * 2) * 1800) / 3600); 
             let timeForNowInMin = (getTime * 3600) / 60;    
             if(debug_status ) console.log("debug: Time for now: " +timeForNowInMin);
 
             for(let i; i < dataChart.length; i++) {
-                const result = 
+                if(dataChart[i] > 0) {
+                    if(dataChart[i] !== dataChart[i]) {
+                        const result = ((360/timeForNowInMin) * dataChart[i]);
+                        dataChart.push(result);
+                    }
+                } 
             }
         }
 
-        if(time.getHours() >= SET_FIRSTHOUR) setInterval(calculateFunction, ((1000 * 60) * 30)); // auto start when hour is six, from 30 in 30 minutes.. check
+        if(time.getHours() >= SET_FIRSTHOUR) setInterval(calculateFunction, 1000); // check every 1 sec.
 
         /* Ajax Chart.js */ 
         var options = {
