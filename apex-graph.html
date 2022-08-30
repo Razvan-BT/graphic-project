@@ -17,7 +17,7 @@
 
     getChart();
     function getChart() {
-        const TIME_WORK = 9,
+        const TIME_WORK = 8,
             SET_FIRSTHOUR = 6,
             debug_status = true,
             MAX_INT_TIME = 30;
@@ -41,25 +41,24 @@
 
         if(debug_status) console.log("debug: dataChart: " +dataChart.length);
         if(debug_status) console.log("debug: checkIfAreThere: " +checkIfAreThere);
-        
+
         let calculateTime = 0,
             time = new Date(), 
             calculateTimeBeta = 0;
 
         let calculateFunction = () => {
+
+            /* Timp neschimbat / 8 ore. */
             let getTime = (((TIME_WORK * 2) * 1800) / 3600); // calculate at every 30 minutes.
-            let timeForNowInMin = (getTime * 3600);
-            if(debug_status ) console.log("debug: Time for now: " +timeForNowInMin / 60); // i change this in minutes -- reference at work space. 9 hours
+            let timeForNowInMin = (getTime * 3600) / 60;    
+            if(debug_status ) console.log("debug: Time for now: " +timeForNowInMin);
 
-            calculateTimeBeta = ((timeForNowInMin / 60) - 480); // ramaining time.
-            if(debug_status ) console.log("debug: BETA: " +calculateTimeBeta);
-
-            calculateTime = ((360 / 480) * calculateTimeBeta);
-            dataChart.push(calculateTime);
-            if(debug_status ) console.log("debug: calculateFunction(): dataChart.length " +dataChart.length);
+            for(let i; i < dataChart.length; i++) {
+                const result = 
+            }
         }
 
-        if(time.getHours() >= SET_FIRSTHOUR) calculateFunction(); // auto start when hour is six.
+        if(time.getHours() >= SET_FIRSTHOUR) setInterval(calculateFunction, ((1000 * 60) * 30)); // auto start when hour is six, from 30 in 30 minutes.. check
 
         /* Ajax Chart.js */ 
         var options = {
