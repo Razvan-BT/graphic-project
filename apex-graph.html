@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,18 +23,19 @@
             debug_status = true,
             MAX_INT_TIME = 30;
         let checkIfAreThere = 0,
+            startMinut = 0,
             theHoursGet = 10,
-            categoriesChart = [ ], // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-            dataChart = [ ], // blue line
-            remChart = [ ]; // black line
+            categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
+            dataChart = [ 0 ], // start with 0 minutes.
+            remChart = new Array(); // black line
 
         // Time from X-Axis 
+
         for(let i = 0; i < getTimesArray(6, 17, 30).length; i++) {
 
             const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
             categoriesChart.push(result);
         }
-
 
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
         for(let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
@@ -49,22 +51,32 @@
 
         let calculateFunction = () => {
 
-            /* Timp neschimbat / 8 ore. */
-            let getTime = (((TIME_WORK * 2) * 1800) / 3600); 
-            let timeForNowInMin = (getTime * 3600) / 60;    
-            if(debug_status ) console.log("debug: Time for now: " +timeForNowInMin);
+            let d1 = new Date();
+            let start = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate(), 6, 0, 0);
+            let d2 = new Date();
+            let now = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate(), d2.getHours(), d2.getMinutes(), d2.getSeconds());
+            let timenow = now.toTimeString().substring(0, 8); // ultima actualizare la // scot data
+            timenow = timenow.substring(0, 5);  // scot secundele
+            let getTime = timenow;
+            if(debug_status ) console.log("debug: getTimeWorked: " +getTime);
+            if(debug_status ) console.log("debug: now time: " +now);
+            if(debug_status ) console.log("debug: start time: " +start);
 
-            for(let i; i < dataChart.length; i++) {
-                if(dataChart[i] > 0) {
-                    if(dataChart[i] !== dataChart[i]) {
-                        const result = ((360/timeForNowInMin) * dataChart[i]);
-                        dataChart.push(result);
-                    }
-                } 
-            }
+
+            let lucrate = (now - start) / 1000;  // 1000
+            if (lucrate > 30600) lucrate = 28800; // time for 8.5 hours worked.
+            else if (lucrate > 23400) lucrate = lucrate - 1800;
+            else if (lucrate > 22800) lucrate = 21600;
+            else if (lucrate > 12000) lucrate = lucrate - 1200;
+            else if (lucrate > 10800) lucrate = 10800;
+            if(debug_status ) console.log("debug: lucrate " +lucrate); // this is in minutes.
+
+
+
+            
         }
-
-        if(time.getHours() >= SET_FIRSTHOUR) setInterval(calculateFunction, 1000); // check every 1 sec.
+        calculateFunction();
+        //if(time.getHours() >= SET_FIRSTHOUR) setInterval(calculateFunction, 2000); // check every 2 sec.
 
         /* Ajax Chart.js */ 
         var options = {
@@ -135,7 +147,93 @@
 
     var chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();
-}
+    }
+
+    function chunkify(a, n, balanced) {
+        
+        if (n < 2)
+            return [a];
+
+        var len = a.length,
+                out = [],
+                i = 0,
+                size;
+
+        if (len % n === 0) {
+            size = Math.floor(len / n);
+            while (i < len) {
+                out.push(a.slice(i, i += size));
+            }
+        }
+
+        else if (balanced) {
+            while (i < len) {
+                size = Math.ceil((len - i) / n--);
+                out.push(a.slice(i, i += size));
+            }
+        }
+
+        else {
+
+            n--;
+            size = Math.floor(len / n);
+            if (len % size === 0)
+                size--;
+            while (i < size * n) {
+                out.push(a.slice(i, i += size));
+            }
+            out.push(a.slice(size * n));
+
+        }
+        return out;
+    }
+
+    console.log(chunkify("1000000", 2, false));
+
+    function secondsToHms(seconds) {
+        if (!seconds) return '';
+
+        let duration = seconds;
+        let hours = duration / 3600;
+        duration = duration % (3600);
+
+        let min = parseInt(duration / 60);
+        duration = duration % (60);
+
+        let sec = parseInt(duration);
+
+        if (sec < 10) {
+            sec = `0${sec}`;
+        }
+        if (min < 10) {
+            min = `0${min}`;
+        }
+
+        if (parseInt(hours, 10) > 0) {
+            return `${parseInt(hours, 10)}h ${min}m ${sec}s`
+        }
+        else if (min == 0) {
+            return `${sec}s`
+        }
+        else {
+            return `${min}m ${sec}s`
+        }
+        }
+    // function format(time) {
+    //     // Hours, minutes and seconds
+    //     var hrs = ~~(time / 3600);
+    //     var mins = ~~((time % 3600) / 60);
+    //     var secs = ~~time % 60;
+
+    //     // Output like "1:01" or "4:03:59" or "123:03:59"
+    //     var ret = "";
+    //     if (hrs > 0) {
+    //         ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+    //     }
+    //     ret += "" + String(mins).padStart(2, '0') + ":" + (secs < 10 ? "0" : "");
+    //     ret += "" + secs;
+    //     return ret;
+    // }
 
     function getTimesArray(start, end, length) {
         let startMin = start * 60
@@ -153,6 +251,7 @@
         return times
     };
 
+   
     /* Return hours, minutes or seconds in only seconds. */
     function hmsToSecondsOnly(strComm) {
         var p = strComm.split(':'),
@@ -200,11 +299,11 @@
 
 
     /*  
-    
-    - Trebuie sa fie calculata ora curenta.
-    - minutele ramase ---> scazute la ora curenta.
-        
+    - Seconde > calculate la / 60 - in minute > adaugate in array fiecare.    
+        https://stackoverflow.com/questions/8188548/splitting-a-js-array-into-n-arrays
     */
+
+
     </script>
 </body>
 </html>
