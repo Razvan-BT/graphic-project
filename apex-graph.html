@@ -35,6 +35,7 @@
 
             const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
             categoriesChart.push(result);
+            startMinut++;
         }
 
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
@@ -69,11 +70,13 @@
             else if (lucrate > 22800) lucrate = 21600;
             else if (lucrate > 12000) lucrate = lucrate - 1200;
             else if (lucrate > 10800) lucrate = 10800;
-            if(debug_status ) console.log("debug: lucrate " +lucrate); // this is in minutes.
+            if(debug_status ) console.log("debug: lucrate " +lucrate / 60); // this is in minutes.
 
+            // let squares = categoriesChart.map((num) => console.log(num))
 
-
-            
+            newArray = categoriesChart.map((num, index, categoriesChart) => {
+                dataChart.push(hmsToSecondsOnly(num) / 1000);
+            });
         }
         calculateFunction();
         //if(time.getHours() >= SET_FIRSTHOUR) setInterval(calculateFunction, 2000); // check every 2 sec.
@@ -188,7 +191,7 @@
         return out;
     }
 
-    console.log(chunkify("1000000", 2, false));
+    //console.log(chunkify("1000000", 2, false));
 
     function secondsToHms(seconds) {
         if (!seconds) return '';
@@ -219,6 +222,8 @@
             return `${min}m ${sec}s`
         }
         }
+
+
     // function format(time) {
     //     // Hours, minutes and seconds
     //     var hrs = ~~(time / 3600);
@@ -234,7 +239,32 @@
     //     ret += "" + secs;
     //     return ret;
     // }
+    function toHoursAndMinutes(totalMinutes) {
+        const minutes = totalMinutes % 60;
+        const hours = Math.floor(totalMinutes / 60);
 
+        return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}`;
+    }
+
+    function padTo2Digits(num) {
+        return num.toString().padStart(2, '0');
+    }
+    /* -------------------------------------------- */
+    const subtractMinutes = (date,minutes) => new Date(date - minutes * 60000);
+
+    const getPastMinutes = (minutes, startDate = new Date()) => {
+    return [...Array(minutes)].map((i,idx) => {
+        let newDate = subtractMinutes(startDate,idx);
+        let hour = newDate.getHours().toString().padStart(2,'0');
+        let minute = newDate.getMinutes().toString().padStart(2,'0');
+        return `${hour}:${minute}`;
+    });
+    };
+
+
+    // var items = ['html5', 'css', 'javascript', 'jquery'];
+    // items.forEach((c,i) => setTimeout(() => console.log(c), i*1000))
+    
     function getTimesArray(start, end, length) {
         let startMin = start * 60
         let endMin = end * 60
