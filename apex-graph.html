@@ -17,6 +17,18 @@
     <script>
 
     getChart();
+
+    function timestringtoDate(timestring){
+        let d = new Date(); // Creates a Date Object using the clients current time
+
+        let [hours, minutes, seconds] = timestring.split(':');
+
+        d.setHours(+hours); // Set the hours, using implicit type coercion
+        d.setMinutes(minutes); // can pass Number or String - doesn't really matter
+        d.setSeconds(seconds);
+        return d;
+    }
+
     function getChart() {
         const TIME_WORK = 8,
             SET_FIRSTHOUR = 6,
@@ -26,16 +38,50 @@
             startMinut = 0,
             theHoursGet = 10,
             categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-            dataChart = [ 0 ], // start with 0 minutes.
+            dataChart = [ ], // start with 0 minutes.
             remChart = new Array(); // black line
 
         // Time from X-Axis 
 
         for(let i = 0; i < getTimesArray(6, 17, 30).length; i++) {
 
+            let chartTime = getTimesArray(6, 17, 30)[i]; 
             const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
             categoriesChart.push(result);
-            startMinut++;
+            
+
+            let d1 = new Date();
+            let start = getTimesArray(6, 17, 30)[0]
+            let d2 = new Date();
+            let now = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate(), d2.getHours(), d2.getMinutes(), d2.getSeconds());
+            let timenow = chartTime.substring(0, 8); // ultima actualizare la // scot data
+            
+            timenow = timenow.substring(0, 5);  // scot secundele
+            let getTime = timenow;
+            if(debug_status ) console.log("debug: getTimeWorked: " +getTime);
+            if(debug_status ) console.log("debug: now time: " +now);
+            if(debug_status ) console.log("debug: start time: " +start);
+
+            
+
+            
+            let lucrate = (timestringtoDate(chartTime) - timestringtoDate(start)) / 1000;  // 1000
+            if (lucrate > 30600) lucrate = 28800; // time for 8.5 hours worked.
+            else if (lucrate > 23400) lucrate = lucrate - 1800;
+            else if (lucrate > 22800) lucrate = 21600;
+            else if (lucrate > 12000) lucrate = lucrate - 1200;
+            else if (lucrate > 10800) lucrate = 10800;
+
+            const minlucrate = lucrate /60;
+            const target = 360;
+
+            let targetnow = target/480 * minlucrate;
+            //if (now < result)
+            dataChart.push(targetnow);
+
+            //
+            //if(debug_status ) console.log("debug: lucrate " +lucrate / 60); // this is in minutes.
+
         }
 
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
@@ -72,13 +118,19 @@
             else if (lucrate > 10800) lucrate = 10800;
             if(debug_status ) console.log("debug: lucrate " +lucrate / 60); // this is in minutes.
 
-            
-            for (let i = 0; i < categoriesChart.length; i++) {
-                dataChart.push((hmsToSecondsOnly(categoriesChart[i]) - lucrate));
-                console.log(lucrate)
-            }
-            
-        }
+        } 
+
+
+            // let takeOne = [];
+            // for (let i = 0; i < dataChart.length; i++) {
+            //         newArray = categoriesChart.map((num) => {
+            //             takeOne.push(hmsToSecondsOnly(num));
+            //         })
+            //     }
+            //     console.log(takeOne);
+            //     dataChart.push(takeOne);
+            // }
+            // console.log(dataChart);
         calculateFunction();
         //if(time.getHours() >= SET_FIRSTHOUR) setInterval(calculateFunction, 2000); // check every 2 sec.
 
