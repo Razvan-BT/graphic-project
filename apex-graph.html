@@ -72,17 +72,12 @@
             else if (lucrate > 10800) lucrate = 10800;
             if(debug_status ) console.log("debug: lucrate " +lucrate / 60); // this is in minutes.
 
-            // let squares = categoriesChart.map((num) => console.log(num))
-
-            // newArray = categoriesChart.map((num) => {
-            //     dataChart.push(hmsToSecondsOnly(num / 1000));
-            // });
             
             for (let i = 0; i < categoriesChart.length; i++) {
-                dataChart.push((hmsToSecondsOnly(categoriesChart[i]) - lucrate) / 60);
+                dataChart.push((hmsToSecondsOnly(categoriesChart[i]) - lucrate));
                 console.log(lucrate)
             }
-          
+            
         }
         calculateFunction();
         //if(time.getHours() >= SET_FIRSTHOUR) setInterval(calculateFunction, 2000); // check every 2 sec.
@@ -337,6 +332,7 @@
     /*  
     - Seconde > calculate la / 60 - in minute > adaugate in array fiecare.    
         https://stackoverflow.com/questions/8188548/splitting-a-js-array-into-n-arrays
+        https://dev.to/sarah_chima/the-javascript-array-map-method-44m0
     */
 
 
