@@ -74,9 +74,15 @@
 
             // let squares = categoriesChart.map((num) => console.log(num))
 
-            newArray = categoriesChart.map((num, index, categoriesChart) => {
-                dataChart.push(hmsToSecondsOnly(num) / 1000);
-            });
+            // newArray = categoriesChart.map((num) => {
+            //     dataChart.push(hmsToSecondsOnly(num / 1000));
+            // });
+            
+            for (let i = 0; i < categoriesChart.length; i++) {
+                dataChart.push((hmsToSecondsOnly(categoriesChart[i]) - lucrate) / 60);
+                console.log(lucrate)
+            }
+          
         }
         calculateFunction();
         //if(time.getHours() >= SET_FIRSTHOUR) setInterval(calculateFunction, 2000); // check every 2 sec.
