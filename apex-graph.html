@@ -52,8 +52,9 @@
         }
 
         let locatedId = GetRequestParam("loc");
-        getDataFromNodeRed(locatedId);
-        function getDataFromNodeRed(loc) {
+        getDataFromNodeRed(locatedId, 0);
+
+        function getDataFromNodeRed(loc, typeOf, material) {
             $.ajax ({
                 url: 'https://node.formens.ro/realizattakt?loc='+loc,
                 type: 'GET',
@@ -98,7 +99,7 @@
                         if(now >= timestringtoDate(chartTime) ) {
                             // dataChart.push(Math.round(targetnow));
                             targetEveryNum.push(Math.round(targetnow));
-                            remChart.push(data.checkpoints[0].pensa[i]);
+                            remChart.push(data.checkpoints[typeOf].pensa[i]);
                         }
 
                         finishTime = targetnow;
@@ -106,27 +107,14 @@
                     
                     dataChart.push(...targetEveryNum);
 
-                    let removeLastItem = new Array();
-                    removeLastItem = data.checkpoints[0].pensa;
-
-                    console.log(removeLastItem);
                     /* remove  last items from array */
                     if(finishTime >= 360) categoriesChart.pop();
                     if(finishTime >= 360) dataChart.pop();
-                    //if(finishTime >= 360) removeLastItem.pop();
-                    // if(finishTime >= 360) data.checkpoints[0].pop();
-
-                    /* Update X Axis black line */
-
-                    // if(dataChart.length > 7) throw new Error ("Something went wrong, try again later.");
-                    // La remChart voi schimba datele intre ele.
                     
-                    // for(let i = 0; i < data.checkpoints[0].pensa.length; i++)
-                    // {
-                    //     remChart.push(data.checkpoints[0].pensa[i]);
-                    // }
 
-                    data.checkpoints[0].pensa.pop();
+                    console.log(dataChart);
+                    console.log(data.checkpoints[typeOf].pensa)
+                    // data.checkpoints[0].pensa.pop();
                     /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
                     for(let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
 
@@ -171,7 +159,7 @@
                             curve: 'smooth'
                         },
                         title: {
-                            text: `${Object.keys(data.checkpoints[0])}`,
+                            text: `${Object.keys(data.checkpoints[typeOf])}`,
                             align: 'left'
                         },
                         grid: {
