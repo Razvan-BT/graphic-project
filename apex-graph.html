@@ -11,6 +11,7 @@
 </head>
 <body>
 
+    <div id="output"></div>
     <div id="chart">
     </div>
     <script>
@@ -64,7 +65,7 @@
 
             let targetnow = ((target/480) * minlucrate);
 
-            if(now >= timestringtoDate(chartTime) ) targetEveryNum.push(targetnow); // add at every 1 hour. ---> remain 30 minute back
+            if(now >= timestringtoDate(chartTime) ) targetEveryNum.push(Math.round(targetnow)); // add at every 1 hour. ---> remain 30 minute back
             finishTime = targetnow; 
         }
 
