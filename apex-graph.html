@@ -5,10 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="./src/query/jquery.main.js"></script><!--  add jquery library -->
+    <script src="./src/query/graph.system.js"></script>
     <title>Graphic</title>
-    <style>
-
-    </style>
 </head>
 <body>
 
@@ -16,60 +15,71 @@
     </div>
     <script>
 
+    setInterval(getChart, (1000 * 60) * 10); // update at every 10 minutes to sync automatically
     getChart();
-
     function getChart() {
         const TIME_WORK = 8,
             SET_FIRSTHOUR = 6,
-            debug_status = true,
-            MAX_INT_TIME = 30;
+            debug_status = false,
+            MAX_INT_TIME = 30,
+            OUT_DATE = 15;
         let checkIfAreThere = 0,
             startMinut = 0,
+            targetEveryNum = [ ],
             theHoursGet = 10,
+            finishTime = 0;
             categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
             dataChart = [ ], // start with 0 minutes.
             remChart = new Array(); // black line
 
         // Time from X-Axis 
 
-        for(let i = 0; i < getTimesArray(6, 17, 30).length; i++) {
+        for(let i = 0; i < getTimesArray(6, OUT_DATE, 30).length; i++) {
 
-            let chartTime = getTimesArray(6, 17, 30)[i]; 
-            const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, 17, 30)[i])) * 1000).toISOString().slice(11, 19);
+            let chartTime = getTimesArray(6, OUT_DATE, 30)[i]; 
+            const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, OUT_DATE, 30)[i])) * 1000).toISOString().slice(11, 19);
             categoriesChart.push(result);
-            
-
+           
             let d1 = new Date();
-            let start = getTimesArray(6, 17, 30)[0]
+            let start = getTimesArray(6, OUT_DATE, 30)[0]
             let d2 = new Date();
             let now = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate(), d2.getHours(), d2.getMinutes(), d2.getSeconds());
             let timenow = chartTime.substring(0, 8); // ultima actualizare la // scot data
-            
+
             timenow = timenow.substring(0, 5);  // scot secundele
             let getTime = timenow;
             if(debug_status ) console.log("debug: getTimeWorked: " +getTime);
             if(debug_status ) console.log("debug: now time: " +now);
             if(debug_status ) console.log("debug: start time: " +start);
-
             
-
-            
-            let lucrate = (timestringtoDate(chartTime) - timestringtoDate(start)) / 1000;  // 1000
+            let lucrate = (timestringtoDate(chartTime) - timestringtoDate(start)) / 1000;  
             if (lucrate > 30600) lucrate = 28800; // time for 8.5 hours worked.
             else if (lucrate > 23400) lucrate = lucrate - 1800;
             else if (lucrate > 22800) lucrate = 21600;
             else if (lucrate > 12000) lucrate = lucrate - 1200;
             else if (lucrate > 10800) lucrate = 10800;
 
-            const minlucrate = lucrate /60;
+            const minlucrate = lucrate / 60;
             const target = 360;
 
-            let targetnow = target/480 * minlucrate;
-            // (now < result)
-            dataChart.push(targetnow);
+            let targetnow = ((target/480) * minlucrate);
 
+            if(now >= timestringtoDate(chartTime) ) targetEveryNum.push(targetnow); // add at every 1 hour. ---> remain 30 minute back
+            finishTime = targetnow; 
         }
 
+        dataChart.push(...targetEveryNum);
+        
+        /* remove  last items from array */
+        if(finishTime >= 360) categoriesChart.pop();
+        if(finishTime >= 360) dataChart.pop();
+
+        /* Update X Axis black line */
+
+        // if(dataChart.length > 7) throw new Error ("Something went wrong, try again later.");
+        // La remChart voi schimba datele intre ele.
+        remChart.push(20, 35, 50);
+        
         /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
         for(let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
         
@@ -150,7 +160,7 @@
     };
 
     var chart = new ApexCharts(document.querySelector("#chart"), options);
-    chart.render();
+        chart.render();
     }
 
     
@@ -163,36 +173,6 @@
         d.setMinutes(minutes); // can pass Number or String - doesn't really matter
         d.setSeconds(seconds);
         return d;
-    }
-
-    function secondsToHms(seconds) {
-        if (!seconds) return '';
-
-        let duration = seconds;
-        let hours = duration / 3600;
-        duration = duration % (3600);
-
-        let min = parseInt(duration / 60);
-        duration = duration % (60);
-
-        let sec = parseInt(duration);
-
-        if (sec < 10) {
-            sec = `0${sec}`;
-        }
-        if (min < 10) {
-            min = `0${min}`;
-        }
-
-        if (parseInt(hours, 10) > 0) {
-            return `${parseInt(hours, 10)}h ${min}m ${sec}s`
-        }
-        else if (min == 0) {
-            return `${sec}s`
-        }
-        else {
-            return `${min}m ${sec}s`
-        }
     }
 
     function getTimesArray(start, end, length) {
