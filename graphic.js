@@ -1,9 +1,13 @@
 let addr = "http://127.0.0.1:1880/realizattakt";
 // let addr = "https://node.formens.ro/realizattakt";
-
+let numarTotal = 0;
 let MINUTES_TO_UPDATE = 10;
+/*
+- de adaugat la chart ID, sa creeze cate un div pentru fiecare.
+- rezolvare problema cu afisarea datelor. (fara functie)
 
 
+*/
 function GetRequestParam(param) {
     var res = null;
     try {
@@ -32,19 +36,14 @@ function getDataNode() {
             type: 'GET', 
             success: function( data ){
                 // console.log('deceee');
-                for(let i = 0; i < data.checkpoints.length; i++) {
-                    var checkpointsLoad = Object.entries(data.checkpoints[i]); 
-                    for(let j = 0; j < checkpointsLoad.length; j++) {
-                        getDataFromNodeRed(data.checkpoints[j], data.target);
-                        // console.log(checkpointsLoad);
-                    }
-                }
+                for(let i = 0; i < Object.entries(data.checkpoints).length; i++) {
+                    getDataFromNodeRed(data.checkpoints[i], data.target)
+                }   
             }
         });
     }
 }
-
-
+console.log(numarTotal)
 function getDataFromNodeRed(data, target) {
 
     const TIME_WORK = 8,
@@ -181,7 +180,6 @@ function getDataFromNodeRed(data, target) {
     let chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();  
 }
-
 
 function timestringtoDate(timestring) {
     let d = new Date(); // Creates a Date Object using the clients current time
