@@ -1,9 +1,13 @@
 let addr = "http://127.0.0.1:1880/realizattakt";
 // let addr = "https://node.formens.ro/realizattakt";
+const TYPE_BUZUNAR = 1;
+const TYPE_PENSA = 0;
+const TYPE_TESLU = 2;
+const MINUTES_TO_UPDATE = 10;
 
-setInterval(getFirstTable, (1000 * 60) * 10); // update at every 10 minutes to sync automatically
-setInterval(getSecondTable, (1000 * 60) * 10); // update at every 10 minutes to sync automatically
-setInterval(getLastTable, (1000 * 60) * 10); // update at every 10 minutes to sync automatically
+setInterval(getFirstTable, (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
+setInterval(getSecondTable, (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
+setInterval(getLastTable, (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
 
 // apexchart into one function
 function getChart(dataChart, remChart, categoriesChart, theHoursGet, chrt, key) {
@@ -39,7 +43,7 @@ function getChart(dataChart, remChart, categoriesChart, theHoursGet, chrt, key) 
             curve: 'smooth'
         },
         title: {
-            text: `${key}`,
+            text: `${key}` + ` - last update (${checkUpdate()})`,
             align: 'center'
         },
         grid: {
@@ -78,7 +82,7 @@ function getChart(dataChart, remChart, categoriesChart, theHoursGet, chrt, key) 
     chart.render();  
 }
 
-function getFirstTable() {
+function getFirstTable(type) {
     const TIME_WORK = 8,
         SET_FIRSTHOUR = 6,
         debug_status = false,
@@ -173,17 +177,17 @@ function getFirstTable() {
                 for (let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
                 if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
                 
-                for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[0].pensa[j]); // add black line from node.
+                for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[type].pensa[j]); // add black line from node.
                 
                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                 if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
-                getChart(dataChart, remChart, categoriesChart, theHoursGet, '', Object.keys(data.checkpoints[0]));
+                getChart(dataChart, remChart, categoriesChart, theHoursGet, '', Object.keys(data.checkpoints[type]));
             }
         })
     }
 }
-function getSecondTable() {
+function getSecondTable(type) {
     const TIME_WORK = 8,
         SET_FIRSTHOUR = 6,
         debug_status = false,
@@ -278,18 +282,18 @@ function getSecondTable() {
                 for (let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
                 if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
                 
-                for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[1].buzunar[j]); // add black line from node.
+                for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[type].buzunar[j]); // add black line from node.
                 
                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                 if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
                 /* Ajax Chart.js */
-                getChart(dataChart, remChart, categoriesChart, theHoursGet, 'Two', Object.keys(data.checkpoints[1]));
+                getChart(dataChart, remChart, categoriesChart, theHoursGet, 'Two', Object.keys(data.checkpoints[type]));
             }
         })
     }
 }
-function getLastTable() {
+function getLastTable(type) {
     const TIME_WORK = 8,
         SET_FIRSTHOUR = 6,
         debug_status = false,
@@ -384,12 +388,12 @@ function getLastTable() {
                 for (let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
                 if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
 
-                for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[2].teslu[j]); // add black line from node.
+                for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[type].teslu[j]); // add black line from node.
                 
                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                 if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
-                getChart(dataChart, remChart, categoriesChart, theHoursGet, 'Three', Object.keys(data.checkpoints[2]));
+                getChart(dataChart, remChart, categoriesChart, theHoursGet, 'Three', Object.keys(data.checkpoints[type]));
             }
         })
     }
@@ -398,9 +402,9 @@ function getLastTable() {
 
 /* Execute all functions */
 
-getFirstTable();
-getSecondTable();
-getLastTable();
+getFirstTable(TYPE_PENSA);
+getSecondTable(TYPE_BUZUNAR);
+getLastTable(TYPE_TESLU);
 
 
 function timestringtoDate(timestring) {
@@ -412,6 +416,26 @@ function timestringtoDate(timestring) {
     d.setMinutes(minutes); // can pass Number or String - doesn't really matter
     d.setSeconds(seconds);
     return d;
+}
+
+
+function checkUpdate() {
+    let whenIs = new Date();
+    let h = whenIs.getHours(),
+        m = whenIs.getMinutes(),
+        s = whenIs.getSeconds();
+    checkTime(m);
+    checkTime(h);
+    checkTime(s);
+    let time = h + ":" +m+ ":" +s;
+    return time;
+}
+
+function checkTime(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
 }
 
 function getTimesArray(start, end, length) {
