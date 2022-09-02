@@ -1,17 +1,118 @@
 let addr = "http://127.0.0.1:1880/realizattakt";
 // let addr = "https://node.formens.ro/realizattakt";
-const TYPE_BUZUNAR = 1;
-const TYPE_PENSA = 0;
-const TYPE_TESLU = 2;
-const MINUTES_TO_UPDATE = 10;
 
-setInterval(function() { getFirstTable(TYPE_PENSA); }, (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
-setInterval(function() { getSecondTable(TYPE_BUZUNAR); } , (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
-setInterval(function() { getLastTable(TYPE_TESLU); } , (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
+let MINUTES_TO_UPDATE = 10;
 
-// apexchart into one function
-function getChart(dataChart, remChart, categoriesChart, theHoursGet, chrt, key) {
-    /* Ajax Chart.js */
+
+function GetRequestParam(param) {
+    var res = null;
+    try {
+        var qs = decodeURIComponent(window.location.search.substring(1)); //get everything after then '?' in URI
+        var ar = qs.split('&');
+        $.each(ar, function (a, b) {
+            var kv = b.split('=');
+            if (param === kv[0]) {
+                res = kv[1];
+                return false; //break loop
+            }
+        });
+    } catch (e) { }
+    return res;
+}
+
+getDataNode();
+function getDataNode() {
+    let locatedId = GetRequestParam("loc");
+    ExtractDacaFromNodeRed(locatedId);
+
+    function ExtractDacaFromNodeRed() {
+        let loc = GetRequestParam("loc");
+        $.ajax ({
+            url: addr + '?loc='+loc,
+            type: 'GET', 
+            success: function( data ){
+                // console.log('deceee');
+                for(let i = 0; i < data.checkpoints.length; i++) {
+                    var checkpointsLoad = Object.entries(data.checkpoints[i]); 
+                    for(let j = 0; j < checkpointsLoad.length; j++) {
+                        getDataFromNodeRed(data.checkpoints[j], data.target);
+                        // console.log(checkpointsLoad);
+                    }
+                }
+            }
+        });
+    }
+}
+
+
+function getDataFromNodeRed(data, target) {
+
+    const TIME_WORK = 8,
+        SET_FIRSTHOUR = 6,
+        debug_status = false,
+        MAX_INT_TIME = 30,
+        OUT_DATE = 15;
+    let checkIfAreThere = 0,
+        startMinut = 0,
+        getTargetNumber,
+        targetEveryNum = [],
+        theHoursGet = 10,
+        finishTime = 0,
+        categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
+        dataChart = [ ], // start with 0 minutes.
+        remChart = new Array(); // black line
+
+    getTargetNumber = Number(target);
+
+    function hoursCalculated(chartTime, start) {
+        let lucrate = (timestringtoDate(chartTime) - timestringtoDate(start)) / 1000;
+        if (lucrate > 30600) lucrate = 28800; // time for 8.5 hours worked.
+        else if (lucrate > 23400) lucrate = lucrate - 1800;
+        else if (lucrate > 22800) lucrate = 21600;
+        else if (lucrate > 12000) lucrate = lucrate - 1200;
+        else if (lucrate > 10800) lucrate = 10800;
+        return lucrate
+    }
+
+    for (let i = 0; i < getTimesArray(6, OUT_DATE, 30).length; i++) {
+        let chartTime = getTimesArray(6, OUT_DATE, 30)[i];
+        const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, OUT_DATE, 30)[i])) * 1000).toISOString().slice(11, 19);
+        categoriesChart.push(result);
+
+        let d1 = new Date();
+        let start = getTimesArray(6, OUT_DATE, 30)[0]
+        let d2 = new Date();
+        let now = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate(), d2.getHours(), d2.getMinutes(), d2.getSeconds());
+        let timenow = chartTime.substring(0, 8); // ultima actualizare la // scot data
+
+        timenow = timenow.substring(0, 5);  // scot secundele
+        let getTime = timenow;
+        if (debug_status) console.log("debug: getTimeWorked: " + getTime);
+        if (debug_status) console.log("debug: now time: " + now);
+        if (debug_status) console.log("debug: start time: " + start);
+
+        let lucrate = hoursCalculated(chartTime, start);
+        const minlucrate = lucrate / 60;
+        const target = getTargetNumber;
+
+        let targetnow = ((target / 480) * minlucrate);
+
+        if (now >= timestringtoDate(chartTime))
+            dataChart.push(Math.round(targetnow));
+
+        if (finishTime >= 360) categoriesChart.pop();
+        if (finishTime >= 360) dataChart.pop();
+    }
+
+    /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
+    for (let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
+    if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
+    
+    //for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[c]); // add black line from node.
+    
+    if (debug_status) console.log("debug: dataChart: " + dataChart.length);
+    if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
+
     var options = {
         series: [{
             name: "Target",
@@ -43,7 +144,7 @@ function getChart(dataChart, remChart, categoriesChart, theHoursGet, chrt, key) 
             curve: 'smooth'
         },
         title: {
-            text: `${key}` + ` - last update (${checkUpdate()})`,
+            text: `${Object.keys(data)}` + ` - last update (${checkUpdate()})`,
             align: 'center'
         },
         grid: {
@@ -77,332 +178,9 @@ function getChart(dataChart, remChart, categoriesChart, theHoursGet, chrt, key) 
             offsetX: -5
         }
     };
-    if(chrt === '') chrt = '';
-    chart = new ApexCharts(document.querySelector("#chart"+chrt), options);
+    let chart = new ApexCharts(document.querySelector("#chart"), options);
     chart.render();  
 }
-
-function getFirstTable(type) {
-    const TIME_WORK = 8,
-        SET_FIRSTHOUR = 6,
-        debug_status = false,
-        MAX_INT_TIME = 30,
-        OUT_DATE = 15;
-    let checkIfAreThere = 0,
-        startMinut = 0,
-        getTargetNumber,
-        targetEveryNum = [],
-        theHoursGet = 10,
-        finishTime = 0,
-        chart,
-        categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-        dataChart = [], // start with 0 minutes.
-        remChart = new Array(); // black line
-
-    // Time from X-Axis 
-
-    function GetRequestParam(param) {
-        var res = null;
-        try {
-            var qs = decodeURIComponent(window.location.search.substring(1)); //get everything after then '?' in URI
-            var ar = qs.split('&');
-            $.each(ar, function (a, b) {
-                var kv = b.split('=');
-                if (param === kv[0]) {
-                    res = kv[1];
-                    return false; //break loop
-                }
-            });
-        } catch (e) { }
-        return res;
-    }
-
-    let locatedId = GetRequestParam("loc");
-    getDataFromNodeRed(locatedId);
-
-    function getDataFromNodeRed(loc) {
-
-        $.ajax({
-            url: addr + '?loc=' + loc,
-            type: 'GET',
-            success: function (data) {
-                getTargetNumber = Number(data.target);
-
-                function hoursCalculated(chartTime, start) {
-                    let lucrate = (timestringtoDate(chartTime) - timestringtoDate(start)) / 1000;
-                    if (lucrate > 30600) lucrate = 28800; // time for 8.5 hours worked.
-                    else if (lucrate > 23400) lucrate = lucrate - 1800;
-                    else if (lucrate > 22800) lucrate = 21600;
-                    else if (lucrate > 12000) lucrate = lucrate - 1200;
-                    else if (lucrate > 10800) lucrate = 10800;
-                    return lucrate
-                }
-
-                for (let i = 0; i < getTimesArray(6, OUT_DATE, 30).length; i++) {
-                    let chartTime = getTimesArray(6, OUT_DATE, 30)[i];
-                    const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, OUT_DATE, 30)[i])) * 1000).toISOString().slice(11, 19);
-                    categoriesChart.push(result);
-
-                    let d1 = new Date();
-                    let start = getTimesArray(6, OUT_DATE, 30)[0]
-                    let d2 = new Date();
-                    let now = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate(), d2.getHours(), d2.getMinutes(), d2.getSeconds());
-                    let timenow = chartTime.substring(0, 8); // ultima actualizare la // scot data
-
-                    timenow = timenow.substring(0, 5);  // scot secundele
-                    let getTime = timenow;
-                    if (debug_status) console.log("debug: getTimeWorked: " + getTime);
-                    if (debug_status) console.log("debug: now time: " + now);
-                    if (debug_status) console.log("debug: start time: " + start);
-
-                    let lucrate = hoursCalculated(chartTime, start);
-                    const minlucrate = lucrate / 60;
-                    const target = getTargetNumber;
-
-                    let targetnow = ((target / 480) * minlucrate);
-
-                    if (now >= timestringtoDate(chartTime))
-                        targetEveryNum.push(Math.round(targetnow));
-
-                    finishTime = targetnow;
-                }
-
-                dataChart.push(...targetEveryNum);
-
-                /* remove  last items from array */
-                if (finishTime >= 360) categoriesChart.pop();
-                if (finishTime >= 360) dataChart.pop();
-    
-                /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
-                for (let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
-                if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
-                
-                for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[type].pensa[j]); // add black line from node.
-                
-                if (debug_status) console.log("debug: dataChart: " + dataChart.length);
-                if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
-
-                getChart(dataChart, remChart, categoriesChart, theHoursGet, '', Object.keys(data.checkpoints[type]));
-            }
-        })
-    }
-}
-function getSecondTable(type) {
-    const TIME_WORK = 8,
-        SET_FIRSTHOUR = 6,
-        debug_status = false,
-        MAX_INT_TIME = 30,
-        OUT_DATE = 15;
-    let checkIfAreThere = 0,
-        startMinut = 0,
-        getTargetNumber,
-        targetEveryNum = [],
-        theHoursGet = 10,
-        finishTime = 0,
-        chart,
-        categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-        dataChart = [], // start with 0 minutes.
-        remChart = new Array(); // black line
-
-    // Time from X-Axis 
-
-    function GetRequestParam(param) {
-        var res = null;
-        try {
-            var qs = decodeURIComponent(window.location.search.substring(1)); //get everything after then '?' in URI
-            var ar = qs.split('&');
-            $.each(ar, function (a, b) {
-                var kv = b.split('=');
-                if (param === kv[0]) {
-                    res = kv[1];
-                    return false; //break loop
-                }
-            });
-        } catch (e) { }
-        return res;
-    }
-
-    let locatedId = GetRequestParam("loc");
-    getDataFromNodeRed(locatedId);
-
-    function getDataFromNodeRed(loc) {
-
-        $.ajax({
-            url: addr + '?loc=' + loc,
-            type: 'GET',
-            success: function (data) {
-                getTargetNumber = Number(data.target);
-
-                function hoursCalculated(chartTime, start) {
-                    let lucrate = (timestringtoDate(chartTime) - timestringtoDate(start)) / 1000;
-                    if (lucrate > 30600) lucrate = 28800; // time for 8.5 hours worked.
-                    else if (lucrate > 23400) lucrate = lucrate - 1800;
-                    else if (lucrate > 22800) lucrate = 21600;
-                    else if (lucrate > 12000) lucrate = lucrate - 1200;
-                    else if (lucrate > 10800) lucrate = 10800;
-                    return lucrate
-                }
-
-                for (let i = 0; i < getTimesArray(6, OUT_DATE, 30).length; i++) {
-                    let chartTime = getTimesArray(6, OUT_DATE, 30)[i];
-                    const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, OUT_DATE, 30)[i])) * 1000).toISOString().slice(11, 19);
-                    categoriesChart.push(result);
-
-                    let d1 = new Date();
-                    let start = getTimesArray(6, OUT_DATE, 30)[0]
-                    let d2 = new Date();
-                    let now = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate(), d2.getHours(), d2.getMinutes(), d2.getSeconds());
-                    let timenow = chartTime.substring(0, 8); // ultima actualizare la // scot data
-
-                    timenow = timenow.substring(0, 5);  // scot secundele
-                    let getTime = timenow;
-                    if (debug_status) console.log("debug: getTimeWorked: " + getTime);
-                    if (debug_status) console.log("debug: now time: " + now);
-                    if (debug_status) console.log("debug: start time: " + start);
-
-                    let lucrate = hoursCalculated(chartTime, start);
-                    const minlucrate = lucrate / 60;
-                    const target = getTargetNumber;
-
-                    let targetnow = ((target / 480) * minlucrate);
-
-                    if (now >= timestringtoDate(chartTime))
-                        targetEveryNum.push(Math.round(targetnow));
-
-                    finishTime = targetnow;
-                }
-
-                dataChart.push(...targetEveryNum);
-
-                /* remove  last items from array */
-                if (finishTime >= 360) categoriesChart.pop();
-                if (finishTime >= 360) dataChart.pop();
-    
-                /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
-                for (let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
-                if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
-                
-                for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[type].buzunar[j]); // add black line from node.
-                
-                if (debug_status) console.log("debug: dataChart: " + dataChart.length);
-                if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
-
-                /* Ajax Chart.js */
-                getChart(dataChart, remChart, categoriesChart, theHoursGet, 'Two', Object.keys(data.checkpoints[type]));
-            }
-        })
-    }
-}
-function getLastTable(type) {
-    const TIME_WORK = 8,
-        SET_FIRSTHOUR = 6,
-        debug_status = false,
-        MAX_INT_TIME = 30,
-        OUT_DATE = 15;
-    let checkIfAreThere = 0,
-        startMinut = 0,
-        getTargetNumber,
-        targetEveryNum = [],
-        theHoursGet = 10,
-        finishTime = 0,
-        chart,
-        categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
-        dataChart = [], // start with 0 minutes.
-        remChart = new Array(); // black line
-
-    // Time from X-Axis 
-
-    function GetRequestParam(param) {
-        var res = null;
-        try {
-            var qs = decodeURIComponent(window.location.search.substring(1)); //get everything after then '?' in URI
-            var ar = qs.split('&');
-            $.each(ar, function (a, b) {
-                var kv = b.split('=');
-                if (param === kv[0]) {
-                    res = kv[1];
-                    return false; //break loop
-                }
-            });
-        } catch (e) { }
-        return res;
-    }
-
-    let locatedId = GetRequestParam("loc");
-    getDataFromNodeRed(locatedId);
-
-    function getDataFromNodeRed(loc) {
-
-        $.ajax({
-            url: addr + '?loc=' + loc,
-            type: 'GET',
-            success: function (data) {
-                getTargetNumber = Number(data.target);
-
-                function hoursCalculated(chartTime, start) {
-                    let lucrate = (timestringtoDate(chartTime) - timestringtoDate(start)) / 1000;
-                    if (lucrate > 30600) lucrate = 28800; // time for 8.5 hours worked.
-                    else if (lucrate > 23400) lucrate = lucrate - 1800;
-                    else if (lucrate > 22800) lucrate = 21600;
-                    else if (lucrate > 12000) lucrate = lucrate - 1200;
-                    else if (lucrate > 10800) lucrate = 10800;
-                    return lucrate
-                }
-
-                for (let i = 0; i < getTimesArray(6, OUT_DATE, 30).length; i++) {
-                    let chartTime = getTimesArray(6, OUT_DATE, 30)[i];
-                    const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, OUT_DATE, 30)[i])) * 1000).toISOString().slice(11, 19);
-                    categoriesChart.push(result);
-
-                    let d1 = new Date();
-                    let start = getTimesArray(6, OUT_DATE, 30)[0]
-                    let d2 = new Date();
-                    let now = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate(), d2.getHours(), d2.getMinutes(), d2.getSeconds());
-                    let timenow = chartTime.substring(0, 8); // ultima actualizare la // scot data
-
-                    timenow = timenow.substring(0, 5);  // scot secundele
-                    let getTime = timenow;
-                    if (debug_status) console.log("debug: getTimeWorked: " + getTime);
-                    if (debug_status) console.log("debug: now time: " + now);
-                    if (debug_status) console.log("debug: start time: " + start);
-
-                    let lucrate = hoursCalculated(chartTime, start);
-                    const minlucrate = lucrate / 60;
-                    const target = getTargetNumber;
-
-                    let targetnow = ((target / 480) * minlucrate);
-
-                    if (now >= timestringtoDate(chartTime))
-                        targetEveryNum.push(Math.round(targetnow));
-
-                    finishTime = targetnow;
-                }
-
-                dataChart.push(...targetEveryNum);
-
-                /* remove  last items from array */
-                if (finishTime >= 360) categoriesChart.pop();
-                if (finishTime >= 360) dataChart.pop();
-    
-                /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
-                for (let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
-                if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
-                for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[type].teslu[j]); // add black line from node.
-                if (debug_status) console.log("debug: dataChart: " + dataChart.length);
-                if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
-
-                getChart(dataChart, remChart, categoriesChart, theHoursGet, 'Three', Object.keys(data.checkpoints[type]));
-            }
-        })
-    }
-}
-
-
-/* Execute all functions */
-
-getFirstTable(TYPE_PENSA);
-getSecondTable(TYPE_BUZUNAR);
-getLastTable(TYPE_TESLU);
 
 
 function timestringtoDate(timestring) {
@@ -469,6 +247,7 @@ function hmsToSecondsOnly(strComm) {
 };
 
 /*
+
 [
     {
         "id": "ee1cad6ca55907c8",
@@ -479,12 +258,12 @@ function hmsToSecondsOnly(strComm) {
         "method": "get",
         "upload": false,
         "swaggerDoc": "",
-        "x": 280,
-        "y": 220,
+        "x": 220,
+        "y": 160,
         "wires": [
             [
                 "b5b7022d53055b3c",
-                "767d7a552328bed7"
+                "0ecd5c1af432f020"
             ]
         ]
     },
@@ -493,18 +272,18 @@ function hmsToSecondsOnly(strComm) {
         "type": "function",
         "z": "2375f1fd09d5550f",
         "name": "function 8",
-        "func": "msg.payload = {}\nmsg.payload.target = 360;\nmsg.payload.checkpoints = [\n    {'pensa':[1111,3,1,48,-50,50,50,50,50,50,50,50,50,50,50,50,50, 70]},\n    { 'buzunar': [10, 15, 16, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n    { 'teslu': [15, 18, 21, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n    ];\n\nreturn msg;",
+        "func": "msg.payload = {}\nif (msg.payload.loc === 'p1')\n{\n  msg.payload.target = 360;\n  msg.payload.checkpoints = [\n      {'pensa':[12,13,11,46,30,50,50,50,50,50,50,50,50,50,50,50,50, 70]},\n      { 'buzunar': [20, 15, 16, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n    //  { 'teslu': [0, 0, 0, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n  ];\n} else\n{\n  msg.payload.target = 300;\n  msg.payload.checkpoints = [\n    { 'altloc': [12, 13, 11, 46, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 70] },\n    { 'altloc2': [20, 15, 16, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n    //  { 'teslu': [0, 0, 0, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n  ];\n}\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 460,
-        "y": 220,
+        "x": 540,
+        "y": 160,
         "wires": [
             [
                 "9308144f8ce79ebc",
-                "0536c240865a443a"
+                "21464575a32d05a6"
             ]
         ]
     },
@@ -515,42 +294,104 @@ function hmsToSecondsOnly(strComm) {
         "name": "",
         "statusCode": "",
         "headers": {},
-        "x": 650,
-        "y": 220,
-        "wires": []
-    },
-    {
-        "id": "767d7a552328bed7",
-        "type": "debug",
-        "z": "2375f1fd09d5550f",
-        "name": "IN RTAKT",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 480,
-        "y": 180,
-        "wires": []
-    },
-    {
-        "id": "0536c240865a443a",
-        "type": "debug",
-        "z": "2375f1fd09d5550f",
-        "name": "TX",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 680,
+        "x": 830,
         "y": 160,
+        "wires": []
+    },
+    {
+        "id": "0ecd5c1af432f020",
+        "type": "debug",
+        "z": "2375f1fd09d5550f",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 540,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "21464575a32d05a6",
+        "type": "debug",
+        "z": "2375f1fd09d5550f",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "ac51cb9d0079beeb",
+        "type": "function",
+        "z": "2375f1fd09d5550f",
+        "name": "function 9",
+        "func": "msg.payload = {}\nif (msg.payload.loc === 'p1')\n{\n  msg.payload.target = 360;\n  msg.payload.checkpoints = [\n      {'pensa':[12,13,11,46,30,50,50,50,50,50,50,50,50,50,50,50,50, 70]},\n      { 'buzunar': [20, 15, 16, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n    //  { 'teslu': [0, 0, 0, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n  ];\n} else\n{\n  msg.payload.target = 300;\n  msg.payload.checkpoints = [\n    { 'altloc': [12, 13, 11, 46, 30, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 70] },\n    { 'altloc2': [20, 15, 16, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n    //  { 'teslu': [0, 0, 0, 48, 60, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50] },\n  ];\n}\n// msg.tmp = []\n// for(let i = 0; i < msg.payload.checkpoints.length; i++){\n//   var tmp = Object.entries(msg.payload.checkpoints[i])\n//   for(let j = 0; j < tmp.length; j++)\n// {\n//   console.log(tmp)\n//   msg.tmp.push(tmp)\n// }\n// }\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 320,
+        "wires": [
+            [
+                "bbb6ea3569aad89a"
+            ]
+        ]
+    },
+    {
+        "id": "b1fd5761912f387a",
+        "type": "inject",
+        "z": "2375f1fd09d5550f",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 400,
+        "y": 320,
+        "wires": [
+            [
+                "ac51cb9d0079beeb"
+            ]
+        ]
+    },
+    {
+        "id": "bbb6ea3569aad89a",
+        "type": "debug",
+        "z": "2375f1fd09d5550f",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 320,
         "wires": []
     }
 ]
