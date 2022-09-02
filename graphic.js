@@ -5,9 +5,9 @@ const TYPE_PENSA = 0;
 const TYPE_TESLU = 2;
 const MINUTES_TO_UPDATE = 10;
 
-setInterval(getFirstTable, (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
-setInterval(getSecondTable, (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
-setInterval(getLastTable, (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
+setInterval(function() { getFirstTable(TYPE_PENSA); }, (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
+setInterval(function() { getSecondTable(TYPE_BUZUNAR); } , (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
+setInterval(function() { getLastTable(TYPE_TESLU); } , (1000 * 60) * MINUTES_TO_UPDATE); // update at every 10 minutes to sync automatically
 
 // apexchart into one function
 function getChart(dataChart, remChart, categoriesChart, theHoursGet, chrt, key) {
