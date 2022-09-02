@@ -35,7 +35,7 @@ function getChart(dataChart, remChart, categoriesChart, theHoursGet, chrt, key) 
                 show: false
             }
         },
-        colors: ['#77B6EA', '#545454'],
+        colors: ['#fa6934', '#545454'],
         dataLabels: {
             enabled: true,
         },
@@ -387,9 +387,7 @@ function getLastTable(type) {
                 /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
                 for (let i = 0; i < dataChart.length; i++) { checkIfAreThere = i; }
                 if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
-
                 for (let j = 0; j <= dataChart.length - 1; j++) remChart.push(data.checkpoints[type].teslu[j]); // add black line from node.
-                
                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                 if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
@@ -420,22 +418,24 @@ function timestringtoDate(timestring) {
 
 
 function checkUpdate() {
-    let whenIs = new Date();
+    let whenIs = new Date(),
+        time;
     let h = whenIs.getHours(),
         m = whenIs.getMinutes(),
         s = whenIs.getSeconds();
-    checkTime(m);
-    checkTime(h);
-    checkTime(s);
-    let time = h + ":" +m+ ":" +s;
-    return time;
-}
-
-function checkTime(i) {
-    if (i < 10) {
-      i = "0" + i;
+    if(h < 10) {
+        time = "0" + h + ":" +m+ ":" +s;
+    } 
+    else if(h > 10 && m < 10) {
+        time = h + ":" +"0"+ +m+ ":" +s;
     }
-    return i;
+    else if(h > 10 && m > 10 && s < 10) {
+        time = h + ":" +m+ ":" +"0"+ +s;
+    }
+    else {
+        time = h + ":" +m+ ":" +s;
+    }
+    return time;
 }
 
 function getTimesArray(start, end, length) {
