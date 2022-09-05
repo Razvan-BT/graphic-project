@@ -33,13 +33,9 @@ function getDataNode() {
             timeout: 10000,
             error: function (err) {
                 window.setTimeout(getDataNode, 15000); // check every 15 sec. internet connection
-                if(err.status == 0) {
-                    $(".msg-box").show();
-                    console.log(err);
-                }
+                alert('Cannot connect to the server... try again.');
             },
             success: function (data) {
-                $('.msg-box').hide();
                 for (let i = 0; i < Object.entries(data.checkpoints).length; i++) {
                     const TIME_WORK = 8,
                         SET_FIRSTHOUR = 6,
@@ -93,17 +89,17 @@ function getDataNode() {
 
                         if (now >= timestringtoDate(chartTime)) dataChart.push(Math.round(targetnow));
 
-                        if (finishTime >= 360) categoriesChart.pop();
-                        if (finishTime >= 360) dataChart.pop();
+                        if (finishTime > 360) categoriesChart.pop();
+                        if (finishTime > 360) dataChart.pop();
                     }
-
+                    console.log('DATACHART: ', dataChart.pop());
 
                     /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
                     for (let d = 0; d < dataChart.length; d++) { checkIfAreThere = d; }
                     if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
 
                     for(let values of Object.values(data.checkpoints[i])) {
-                        for (let j = 0; j < dataChart.length - 1; j++){
+                        for (let j = 0; j < dataChart.length; j++){
                             remChart.push(...[values]);
                         }
                     }
@@ -130,10 +126,7 @@ function getDataNode() {
                                 left: 7,
                                 blur: 10,
                                 opacity: 0.2
-                            }//,
-                            // toolbar: {
-                            //     show: false
-                            // },
+                            }
                         },
                         zoom: {
                             enabled: true
@@ -163,7 +156,7 @@ function getDataNode() {
                             size: 1
                         },
                         xaxis: {
-                            categories: categoriesChart, // time
+                            categories: categoriesChart,
                             title: {
                                 text: 'Time X-Axis (6:00 - 14:30)'
                             },
@@ -176,7 +169,7 @@ function getDataNode() {
                                 text: 'Time'
                             },
                             min: 0,
-                            max: theHoursGet  // set averange
+                            max: theHoursGet
                         },
                         legend: {
                             position: 'top',
