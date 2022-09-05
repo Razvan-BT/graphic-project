@@ -1,13 +1,9 @@
 let addr = "http://127.0.0.1:1880/realizattakt";
 // let addr = "https://node.formens.ro/realizattakt";
-let numarTotal = 0;
-let MINUTES_TO_UPDATE = 10;
-/*
-- de adaugat la chart ID, sa creeze cate un div pentru fiecare.
-- rezolvare problema cu afisarea datelor. (fara functie)
+const MINUTES_TO_UPDATE = 10;
 
+setInterval(getDataNode, (1000 * 60) * MINUTES_TO_UPDATE); // update server at every 10 minutes.
 
-*/
 function GetRequestParam(param) {
     var res = null;
     try {
@@ -34,9 +30,16 @@ function getDataNode() {
         $.ajax({
             url: addr + '?loc=' + loc,
             type: 'GET',
-            timeout: 1000,
+            timeout: 10000,
+            error: function (err) {
+                window.setTimeout(getDataNode, 15000); // check every 15 sec. internet connection
+                if(err.status == 0) {
+                    $(".msg-box").show();
+                    console.log(err);
+                }
+            },
             success: function (data) {
-                // console.log('deceee');
+                $('.msg-box').hide();
                 for (let i = 0; i < Object.entries(data.checkpoints).length; i++) {
                     const TIME_WORK = 8,
                         SET_FIRSTHOUR = 6,
@@ -107,7 +110,6 @@ function getDataNode() {
                     if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                     if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
-                    
 
                     var options = {
 
@@ -128,10 +130,16 @@ function getDataNode() {
                                 left: 7,
                                 blur: 10,
                                 opacity: 0.2
-                            },
-                            toolbar: {
-                                show: false
-                            }
+                            }//,
+                            // toolbar: {
+                            //     show: false
+                            // },
+                        },
+                        zoom: {
+                            enabled: true
+                        },
+                        noData: {
+                            text: 'Loading...'
                         },
                         colors: ['#fa6934', '#545454'],
                         dataLabels: {
@@ -187,13 +195,7 @@ function getDataNode() {
                     let chart = new ApexCharts(diver, options);
                     chart.render();
                 }
-                // $('#checkLOG').text('Checking connection to server!');
-                // $('#message-request').hide().css("visibility", "hidden");
             }
-            // error: function (x, t, m) {
-            //     $('#checkLOG').text('Connection lost... try again later!');
-            //     if(t === 'timeout') $('#message-request').show().css("visibility", "none"); // Alert message. With no internet connection
-            // }
         });
     }
 }
@@ -219,10 +221,10 @@ function checkUpdate() {
     if (h < 10) {
         time = "0" + h + ":" + m + ":" + s;
     }
-    else if (h > 10 && m < 10) {
+    else if (m < 10) {
         time = h + ":" + "0" + +m + ":" + s;
     }
-    else if (h > 10 && m > 10 && s < 10) {
+    else if (s < 10) {
         time = h + ":" + m + ":" + "0" + +s;
     }
     else {
