@@ -131,7 +131,7 @@ function getDataNode() {
                             },
                             toolbar: {
                                 show: false
-                            },
+                            }
                         },
                         colors: ['#fa6934', '#545454'],
                         dataLabels: {
@@ -181,20 +181,19 @@ function getDataNode() {
 
                     let diver = document.createElement('div');
                     diver.id = 'num_'+i;
-                    let checkParent = document.getElementById('graphic');
+                    let checkParent = document.getElementById('chart');
                     checkParent.appendChild(diver);
                     
-
                     let chart = new ApexCharts(diver, options);
                     chart.render();
                 }
-                // $('#checkLOG').val('Checking connection to server!');
+                // $('#checkLOG').text('Checking connection to server!');
                 // $('#message-request').hide().css("visibility", "hidden");
-            },
-            error: function (x, t, m) {
-            //     $('#checkLOG').val('Connection lost... try again later!');
-            //     if(t === 'timeout') $('#message-request').show().css("visibility", "none"); // Alert message. With no internet connection
             }
+            // error: function (x, t, m) {
+            //     $('#checkLOG').text('Connection lost... try again later!');
+            //     if(t === 'timeout') $('#message-request').show().css("visibility", "none"); // Alert message. With no internet connection
+            // }
         });
     }
 }
