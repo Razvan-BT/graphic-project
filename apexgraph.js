@@ -140,13 +140,21 @@ $(document).ready(function () {
                             colors: ['#fa6934', '#545454'],
                             dataLabels: {
                                 enabled: true,
-                                offsetY: -6,
+                                offsetY: -6, 
+                                style: {
+                                  colors: ['#000']
+                                },
+                                background: {
+                                  enabled: false,
+                                  foreColor: '#111',
+                                  borderWidth: 0
+                                } 
                             },
                             stroke: {
                                 curve: 'straight'
                             },
                             title: {
-                                text: `${Object.keys(data.checkpoints[i])}` + ` - last update (${checkUpdate()})`,
+                                text: `${Object.keys(data.checkpoints[i])}`,
                                 align: 'center'
                             },
                             grid: {
@@ -162,7 +170,7 @@ $(document).ready(function () {
                             xaxis: {
                                 categories: categoriesChart,
                                 title: {
-                                    text: 'Time X-Axis (6:00 - 14:30)'
+                                    text: ' '
                                 },
                                 tooltip: {
                                     enabled: false,
@@ -208,17 +216,6 @@ $(document).ready(function () {
         d.setMinutes(minutes); // can pass Number or String - doesn't really matter
         d.setSeconds(seconds);
         return d;
-    }
-
-    function checkUpdate() {
-        let whenIs = new Date(),
-            time;
-        let h = whenIs.getHours(),
-            m = whenIs.getMinutes(),
-            s = whenIs.getSeconds();
-        time = + h + ":" + m + ":" + s;
-        paddedTime = time.split(':').map(e => `0${e}`.slice(-2)).join(':')
-        return paddedTime;
     }
 
     function getTimesArray(start, end, length) {
