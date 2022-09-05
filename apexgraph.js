@@ -99,11 +99,11 @@ $(document).ready(function () {
                         for (let d = 0; d < dataChart.length; d++) { checkIfAreThere = d; }
                         if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
 
-                        for(let values of Object.values(data.checkpoints[i])) {
-                            for (let j = 0; j < dataChart.length; j++){
+                        for(let values of Object.values(data.checkpoints[i])) 
+                            for (let i = 0; i < Object.entries(data.checkpoints).length; i++) {
                                 remChart.push(...[values]);
                             }
-                        }
+                            
                         if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                         if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
