@@ -37,6 +37,7 @@ $(document).ready(function () {
                     alert('Cannot connect to the server... try again.');
                 },
                 success: function (data) {
+
                     for (let i = 0; i < Object.entries(data.checkpoints).length; i++) {
                         const TIME_WORK = 8,
                             SET_FIRSTHOUR = 6,
@@ -99,11 +100,12 @@ $(document).ready(function () {
                         for (let d = 0; d < dataChart.length; d++) { checkIfAreThere = d; }
                         if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
 
-                        for(let values of Object.values(data.checkpoints[i])) 
+                        for(let values of Object.values(data.checkpoints[i])) { 
                             for (let i = 0; i < Object.entries(data.checkpoints).length; i++) {
                                 remChart.push(...[values]);
                             }
-                            
+                        }
+
                         if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                         if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
@@ -137,7 +139,8 @@ $(document).ready(function () {
                             },
                             colors: ['#fa6934', '#545454'],
                             dataLabels: {
-                                enabled: false,
+                                enabled: true,
+                                offsetY: -6,
                             },
                             stroke: {
                                 curve: 'straight'
@@ -154,7 +157,7 @@ $(document).ready(function () {
                                 },
                             },
                             markers: {
-                                size: 0
+                                size: 5
                             },
                             xaxis: {
                                 categories: categoriesChart,
@@ -188,6 +191,8 @@ $(document).ready(function () {
                         
                         let chart = new ApexCharts(diver, options);
                         chart.render();
+
+                        // location.reload(false);
                     }
                 }
             });
