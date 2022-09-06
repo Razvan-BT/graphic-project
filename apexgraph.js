@@ -1,6 +1,6 @@
 $(document).ready(function () {
-    let addr = "http://127.0.0.1:1880/realizattakt";
-    // let addr = "https://node.formens.ro/realizattakt";
+    // let addr = "http://127.0.0.1:1880/realizattakt";
+    let addr = "https://node.formens.ro/realizattakt";
 
     function GetRequestParam(param) {
         var res = null;
@@ -20,7 +20,7 @@ $(document).ready(function () {
 
     getDataNode();
     function getDataNode() {
-        debugger;
+        //debugger;
         let locatedId = GetRequestParam("loc");
         ExtractDacaFromNodeRed(locatedId);
 
@@ -47,15 +47,12 @@ $(document).ready(function () {
                         },
                         success: function (data) {
                             for (let i = 0; i < Object.entries(data.checkpoints).length; i++) {
-                                const TIME_WORK = 8,
-                                    SET_FIRSTHOUR = 6,
+                                const SET_FIRSTHOUR = 6,
                                     debug_status = false,
                                     MAX_INT_TIME = 25,
                                     OUT_DATE = 15;
                                 let checkIfAreThere = 0,
-                                    startMinut = 0,
                                     getTargetNumber,
-                                    targetEveryNum = [],
                                     theHoursGet = 10,
                                     finishTime = 0,
                                     categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
@@ -112,6 +109,7 @@ $(document).ready(function () {
                                         remChart.push(...[values]);
                                     }
                                 }
+                                
 
                                 /* If are more remChart that dataChart make equal between this two. */
                                 if(dataChart.length < remChart[i].length) {
