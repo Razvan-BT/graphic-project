@@ -1,27 +1,13 @@
 $(document).ready(function () {
-    // let addr = "http://127.0.0.1:1880/realizattakt";
-    let addr = "https://node.formens.ro/realizattakt";
-    const MINUTES_TO_UPDATE = 10;
-    // setInterval(getDataNode, (1000 * 60) * MINUTES_TO_UPDATE); // update server at every 10 minutes.
-
-    UpdatePageAtTime();
-    function UpdatePageAtTime () {
-        let checkDate = new Date();
-        let checkDateMinutes = checkDate.getMinutes();
-        let checkDateSeconds = checkDate.getSeconds();
-        let interval;
-        if(checkDateMinutes == 0 || checkDateMinutes == 30 && checkDateSeconds == 0) {
-            interval = setInterval(getDataNode, 1000);
-        }
-        else {
-            clearInterval(interval);
-        }
-    }
+    let addr = "http://127.0.0.1:1880/realizattakt";
+    //let addr = "https://node.formens.ro/realizattakt";
+    const MINUTES_TO_UPDATE = 30;
+    setInterval(getDataNode, (1000 * 60) * MINUTES_TO_UPDATE); // update server at every 30 minutes.
 
     function GetRequestParam(param) {
         var res = null;
         try {
-            var qs = decodeURIComponent(window.location.search.substring(1)); //get everything after then '?' in URI
+            var qs = decodeURIComponent(window.location.search.substring(1)); //get everything after than '?' in URI
             var ar = qs.split('&');
             $.each(ar, function (a, b) {
                 var kv = b.split('=');
@@ -36,17 +22,18 @@ $(document).ready(function () {
 
     getDataNode();
     function getDataNode() {
+        debugger;
         let locatedId = GetRequestParam("loc");
         ExtractDacaFromNodeRed(locatedId);
 
         function ExtractDacaFromNodeRed() {
             let loc = GetRequestParam("loc");
-            $({property: 0}).animate({property: 100}, {
-                duration: 200,
+            $({property: 0}).animate({property: 95}, {
+                duration: 100, // 100 ms.
                 step: function() {
                     var _percent = Math.round(this.property);
                     $('#progress').css('width',  _percent+"%");
-                    if(_percent == 100) {
+                    if(_percent == 95) {
                         $("#progress").addClass("done");
                     }
                 },
@@ -61,7 +48,6 @@ $(document).ready(function () {
                             console.error("ERROR: Something was wrong... ");
                         },
                         success: function (data) {
-
                             for (let i = 0; i < Object.entries(data.checkpoints).length; i++) {
                                 const TIME_WORK = 8,
                                     SET_FIRSTHOUR = 6,
@@ -120,7 +106,7 @@ $(document).ready(function () {
                                 }
 
                                 categoriesChart.pop(); // remove last element from array.
-                                dataChart.pop(); // remove last element from array.
+                                //dataChart.pop(); // remove last element from array.
 
                                 /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
                                 for (let d = 0; d < dataChart.length; d++) { checkIfAreThere = d; }
@@ -226,6 +212,8 @@ $(document).ready(function () {
                                     }
                                 };
 
+
+                                /* create element forEach table */
                                 let diver = document.createElement('div');
                                 diver.id = 'num_'+i;
                                 let checkParent = document.getElementById('chart');
