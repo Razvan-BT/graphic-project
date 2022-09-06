@@ -1,3 +1,4 @@
+
 #progress {
     position: fixed;
     z-index: 2147483647;
@@ -5,7 +6,7 @@
     left: -6px;
     width: 0%;
     height: 2px;
-    background: #fa6934;
+    background: #0d6efd;
     -moz-border-radius: 1px;
     -webkit-border-radius: 1px;
     border-radius: 1px;

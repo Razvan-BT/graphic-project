@@ -26,12 +26,12 @@ $(document).ready(function () {
 
         function ExtractDacaFromNodeRed() {
             let loc = GetRequestParam("loc");
-            $({property: 0}).animate({property: 95}, {
-                duration: 100, // 100 ms.
+            $({property: 0}).animate({property: 105}, {
+                duration: 200, // 200 ms.
                 step: function() {
                     var _percent = Math.round(this.property);
                     $('#progress').css('width',  _percent+"%");
-                    if(_percent == 95) {
+                    if(_percent == 105) {
                         $("#progress").addClass("done");
                     }
                 },
@@ -39,14 +39,15 @@ $(document).ready(function () {
                     $.ajax({
                         url: addr + '?loc=' + loc,
                         type: 'GET',
-                        timeout: 1000,
+                        timeout: 5000,
                         error: function (err) {
                             window.setTimeout(getDataNode, 15000); // check every 15 sec. internet connection
                             alert('Cannot connect to the server... try again.');
                             console.error("ERROR: Something was wrong... ");
                         },
                         success: function (data) {
-                            for (let i = 0; i < Object.entries(data.checkpoints).length; i++) {
+                            for (let i = 0; i < Object.entries(data.checkpoints).length; i++) 
+                            {
                                 const SET_FIRSTHOUR = 6,
                                     debug_status = false,
                                     MAX_INT_TIME = 25,
@@ -57,11 +58,12 @@ $(document).ready(function () {
                                     finishTime = 0,
                                     categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
                                     dataChart = [], // start with 0 minutes.
-                                    remChart = []; // black line
+                                    realChart = []; // black line
 
                                 getTargetNumber = Number(data.target);
 
-                                function hoursCalculated(chartTime, start) {
+                                function hoursCalculated(chartTime, start) 
+                                {
                                     let lucrate = (timestringtoDate(chartTime) - timestringtoDate(start)) / 1000;
                                     if (lucrate > 30600) lucrate = 28800; // time for 8.5 hours worked.
                                     else if (lucrate > 23400) lucrate = lucrate - 1800;
@@ -71,7 +73,8 @@ $(document).ready(function () {
                                     return lucrate
                                 }
 
-                                for (let g = 0; g < getTimesArray(6, OUT_DATE, 30).length; g++) {
+                                for (let g = 0; g < getTimesArray(6, OUT_DATE, 30).length; g++) 
+                                {
                                     let chartTime = getTimesArray(6, OUT_DATE, 30)[g];
                                     const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, OUT_DATE, 30)[g])) * 1000).toISOString().slice(11, 19);
                                     categoriesChart.push(result);
@@ -97,8 +100,9 @@ $(document).ready(function () {
                                     if (now >= timestringtoDate(chartTime)) dataChart.push(Math.round(targetnow));
                                 }
 
-                                if (finishTime > 300) categoriesChart.pop(); // remove last element from array.
-                                if (finishTime > 300) dataChart.pop(); // remove last element from array.
+                                let newTime = new Date();
+                                let hourTm = newTime.getHours();
+                                if(hourTm > 14) dataChart.pop(); // remove last element from array.
 
                                 /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
                                 for (let d = 0; d < dataChart.length; d++) { checkIfAreThere = d; }
@@ -106,106 +110,68 @@ $(document).ready(function () {
 
                                 for(let values of Object.values(data.checkpoints[i])) { 
                                     for (let z = 0; z < Object.entries(data.checkpoints).length; z++) {        
-                                        remChart.push(...[values]);
+                                        realChart.push(...[values]);
                                     }
                                 }
                                 
 
-                                /* If are more remChart that dataChart make equal between this two. */
-                                if(dataChart.length < remChart[i].length) {
+                                /* If are more realChart that dataChart make equal between this two. */
+                                if(dataChart.length < realChart[i].length) {
                                     do {
-                                        remChart[i].pop();
+                                        realChart[i].pop();
                                     }
-                                    while(dataChart.length < remChart[i].length);
+                                    while(dataChart.length < realChart[i].length);
                                 }
 
                                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                                 if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
-
                                 var options = {
-
                                     series: [{
-                                        name: "Target",
-                                        data: dataChart,
-                                    }, {
-                                        name: "Rem",
-                                        data: remChart[i],
-                                    }],
+                                    name: 'Time',
+                                    type: 'column',
+                                    data: dataChart,
+                                  }, {
+                                    name: 'Real',
+                                    type: 'line',
+                                    data: realChart[i],
+                                  }],
                                     chart: {
-                                        height: 350,
-                                        type: 'line',
-                                        dropShadow: {
-                                            enabled: true,
-                                            color: '#000',
-                                            top: 18,
-                                            left: 7,
-                                            blur: 10,
-                                            opacity: 0.2,
-                                        },
-                                    },
-                                    zoom: {
-                                        enabled: true
-                                    },
-                                    noData: {
-                                        text: 'No data showing..'
-                                    },
-                                    colors: ['#fa6934', '#545454'],
-                                    dataLabels: {
-                                        enabled: true,
-                                        offsetY: -6, 
-                                        style: {
-                                        colors: ['#000']
-                                        },
-                                        background: {
-                                        enabled: false,
-                                        foreColor: '#111',
-                                        borderWidth: 0
-                                        } 
-                                    },
-                                    stroke: {
-                                        curve: 'smooth'
-                                    },
+                                    height: 350,
+                                    type: 'line',
+                                    background: '#fff'
+                                  },
+                                  stroke: {
+                                    width: [0, 2]
+                                  },
+                                  title: {
+                                    text: `${Object.keys(data.checkpoints[i])}`
+                                  },
+                                  noData: {
+                                    text: 'No data showing..',
+                                  },
+                                  dataLabels: {
+                                    enabled: true,
+                                    enabledOnSeries: [1]
+                                  },
+                                  labels: categoriesChart,
+                                  xaxis: {
+                                    type: 'time'
+                                  },
+                                  yaxis: [{
                                     title: {
-                                        text: `${Object.keys(data.checkpoints[i])}`,
-                                        align: 'center'
+                                      text: 'Count time',
                                     },
-                                    grid: {
-                                        borderColor: '#e7e7e7',
-                                        row: {
-                                            colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-                                            opacity: 0.5
-                                        },
-                                    },
-                                    markers: {
-                                        size: 4
-                                    },
-                                    xaxis: {
-                                        categories: categoriesChart,
-                                        title: {
-                                            text: ' '
-                                        },
-                                        tooltip: {
-                                            enabled: false,
-                                        }
-                                    },
-                                    yaxis: {
-                                        title: {
-                                            text: 'Time'
-                                        },
-                                        min: 0,
-                                        max: theHoursGet
-                                    },
-                                    legend: {
-                                        position: 'top',
-                                        horizontalAlign: 'right',
-                                        floating: true,
-                                        offsetY: -25,
-                                        offsetX: -5
+                                  
+                                  }, {
+                                    opposite: true,
+                                    title: {
+                                      text: ' '
                                     }
+                                  }]
                                 };
 
-
+                                  
                                 /* create element forEach table */
                                 let diver = document.createElement('div');
                                 diver.id = 'num_'+i;
