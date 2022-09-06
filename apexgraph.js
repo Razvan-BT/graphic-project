@@ -1,8 +1,6 @@
 $(document).ready(function () {
     let addr = "http://127.0.0.1:1880/realizattakt";
-    //let addr = "https://node.formens.ro/realizattakt";
-    const MINUTES_TO_UPDATE = 30;
-    setInterval(getDataNode, (1000 * 60) * MINUTES_TO_UPDATE); // update server at every 30 minutes.
+    // let addr = "https://node.formens.ro/realizattakt";
 
     function GetRequestParam(param) {
         var res = null;
@@ -100,13 +98,10 @@ $(document).ready(function () {
                                     let targetnow = ((target / 480) * minlucrate);
 
                                     if (now >= timestringtoDate(chartTime)) dataChart.push(Math.round(targetnow));
-
-                                    //if (finishTime > 360) categoriesChart.pop();
-                                    //if (finishTime > 360) dataChart.pop();
                                 }
 
-                                categoriesChart.pop(); // remove last element from array.
-                                //dataChart.pop(); // remove last element from array.
+                                if (finishTime > 300) categoriesChart.pop(); // remove last element from array.
+                                if (finishTime > 300) dataChart.pop(); // remove last element from array.
 
                                 /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
                                 for (let d = 0; d < dataChart.length; d++) { checkIfAreThere = d; }
@@ -148,14 +143,14 @@ $(document).ready(function () {
                                             top: 18,
                                             left: 7,
                                             blur: 10,
-                                            opacity: 0.2
-                                        }
+                                            opacity: 0.2,
+                                        },
                                     },
                                     zoom: {
                                         enabled: true
                                     },
                                     noData: {
-                                        text: 'Loading...'
+                                        text: 'No data showing..'
                                     },
                                     colors: ['#fa6934', '#545454'],
                                     dataLabels: {
@@ -171,7 +166,7 @@ $(document).ready(function () {
                                         } 
                                     },
                                     stroke: {
-                                        curve: 'straight'
+                                        curve: 'smooth'
                                     },
                                     title: {
                                         text: `${Object.keys(data.checkpoints[i])}`,
@@ -185,7 +180,7 @@ $(document).ready(function () {
                                         },
                                     },
                                     markers: {
-                                        size: 5
+                                        size: 4
                                     },
                                     xaxis: {
                                         categories: categoriesChart,
