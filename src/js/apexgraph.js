@@ -102,7 +102,7 @@ $(document).ready(function () {
 
                                 let newTime = new Date();
                                 let hourTm = newTime.getHours();
-                                if(hourTm > 14) dataChart.pop(); // remove last element from array.
+                                if(hourTm > 14) dataChart.pop(); // remove last element from array. after 14:30
 
                                 /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
                                 for (let d = 0; d < dataChart.length; d++) { checkIfAreThere = d; }
