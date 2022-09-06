@@ -41,12 +41,12 @@ $(document).ready(function () {
 
         function ExtractDacaFromNodeRed() {
             let loc = GetRequestParam("loc");
-            $({property: 0}).animate({property: 105}, {
-                duration: 350,
+            $({property: 0}).animate({property: 100}, {
+                duration: 200,
                 step: function() {
                     var _percent = Math.round(this.property);
                     $('#progress').css('width',  _percent+"%");
-                    if(_percent == 105) {
+                    if(_percent == 100) {
                         $("#progress").addClass("done");
                     }
                 },
@@ -234,6 +234,7 @@ $(document).ready(function () {
                                 let chart = new ApexCharts(diver, options);
                                 chart.render();
                             }
+                            $("#progress").addClass("done");
                             console.warn('Successfully page loaded!');
                         }
                     });
