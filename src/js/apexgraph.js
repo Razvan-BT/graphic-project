@@ -202,7 +202,7 @@ $(document).ready(function () {
                                 },
                                 plotOptions: {
                                   bar: {
-                                    columnWidth: '10%'
+                                    columnWidth: '35%'
                                   }
                                 },
                                 colors: ['#00E396'],
