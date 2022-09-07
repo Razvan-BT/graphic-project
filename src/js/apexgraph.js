@@ -127,52 +127,6 @@ $(document).ready(function () {
                                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                                 if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
-                                // var options = {
-                                //     series: [{
-                                //     name: 'Plan',
-                                //     type: 'column',
-                                //     data: dataChart,
-                                //   }, {
-                                //     name: 'Real',
-                                //     type: 'line',
-                                //     data: realChart[i],
-                                //   }],
-                                //     chart: {
-                                //     height: 350,
-                                //     type: 'line',
-                                //     background: '#fff'
-                                //   },
-                                //   stroke: {
-                                //     width: [0, 1],
-                                //   },
-                                //   title: {
-                                //     text: `${Object.keys(data.checkpoints[i])}`
-                                //   },
-                                //   noData: {
-                                //     text: 'No data showing..',
-                                //   },
-                                //   dataLabels: {
-                                //     enabled: true,
-                                //     enabledOnSeries: [1]
-                                //   },
-                                //   labels: categoriesChart,
-                                //   xaxis: {
-                                //     type: 'time'
-                                //   },
-                                //   yaxis: [{
-                                //     title: {
-                                //       text: 'Time count',
-                                //     },
-                                  
-                                //   }, {
-                                //     opposite: true,
-                                //     title: {
-                                //       text: 'Real count'
-                                //     }
-                                //   }]
-                                // };
-                        
-
                                 let dataCheck = [];
                                 for(let y = 0; y < dataChart.length; y++) {
                                   dataCheck[y] = {
