@@ -39,7 +39,7 @@ $(document).ready(function () {
                     $.ajax({
                         url: addr + '?loc=' + loc,
                         type: 'GET',
-                        timeout: 5000,
+                        timeout: 10000,
                         error: function (err) {
                             window.setTimeout(getDataNode, 15000); // check every 15 sec. internet connection
                             alert('Cannot connect to the server... try again.');
@@ -126,52 +126,130 @@ $(document).ready(function () {
                                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                                 if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
+                                // var options = {
+                                //     series: [{
+                                //     name: 'Plan',
+                                //     type: 'column',
+                                //     data: dataChart,
+                                //   }, {
+                                //     name: 'Real',
+                                //     type: 'line',
+                                //     data: realChart[i],
+                                //   }],
+                                //     chart: {
+                                //     height: 350,
+                                //     type: 'line',
+                                //     background: '#fff'
+                                //   },
+                                //   stroke: {
+                                //     width: [0, 1],
+                                //   },
+                                //   title: {
+                                //     text: `${Object.keys(data.checkpoints[i])}`
+                                //   },
+                                //   noData: {
+                                //     text: 'No data showing..',
+                                //   },
+                                //   dataLabels: {
+                                //     enabled: true,
+                                //     enabledOnSeries: [1]
+                                //   },
+                                //   labels: categoriesChart,
+                                //   xaxis: {
+                                //     type: 'time'
+                                //   },
+                                //   yaxis: [{
+                                //     title: {
+                                //       text: 'Time count',
+                                //     },
+                                  
+                                //   }, {
+                                //     opposite: true,
+                                //     title: {
+                                //       text: 'Real count'
+                                //     }
+                                //   }]
+                                // };
                                 var options = {
                                     series: [{
-                                    name: 'Time',
-                                    type: 'column',
-                                    data: dataChart,
-                                  }, {
-                                    name: 'Real',
-                                    type: 'line',
-                                    data: realChart[i],
+                                    name: 'Inflation',
+                                    data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2]
                                   }],
                                     chart: {
                                     height: 350,
-                                    type: 'line',
-                                    background: '#fff'
+                                    type: 'bar',
                                   },
-                                  stroke: {
-                                    width: [0, 2]
-                                  },
-                                  title: {
-                                    text: `${Object.keys(data.checkpoints[i])}`
-                                  },
-                                  noData: {
-                                    text: 'No data showing..',
+                                  plotOptions: {
+                                    bar: {
+                                      borderRadius: 10,
+                                      dataLabels: {
+                                        position: 'top', // top, center, bottom
+                                      },
+                                    }
                                   },
                                   dataLabels: {
                                     enabled: true,
-                                    enabledOnSeries: [1]
-                                  },
-                                  labels: categoriesChart,
-                                  xaxis: {
-                                    type: 'time'
-                                  },
-                                  yaxis: [{
-                                    title: {
-                                      text: 'Count time',
+                                    formatter: function (val) {
+                                      return val + "%";
                                     },
-                                  
-                                  }, {
-                                    opposite: true,
-                                    title: {
-                                      text: ' '
+                                    offsetY: -20,
+                                    style: {
+                                      fontSize: '12px',
+                                      colors: ["#304758"]
                                     }
-                                  }]
+                                  },
+                                  
+                                  xaxis: {
+                                    categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                                    position: 'top',
+                                    axisBorder: {
+                                      show: false
+                                    },
+                                    axisTicks: {
+                                      show: false
+                                    },
+                                    crosshairs: {
+                                      fill: {
+                                        type: 'gradient',
+                                        gradient: {
+                                          colorFrom: '#D8E3F0',
+                                          colorTo: '#BED1E6',
+                                          stops: [0, 100],
+                                          opacityFrom: 0.4,
+                                          opacityTo: 0.5,
+                                        }
+                                      }
+                                    },
+                                    tooltip: {
+                                      enabled: true,
+                                    }
+                                  },
+                                  yaxis: {
+                                    axisBorder: {
+                                      show: false
+                                    },
+                                    axisTicks: {
+                                      show: false,
+                                    },
+                                    labels: {
+                                      show: false,
+                                      formatter: function (val) {
+                                        return val + "%";
+                                      }
+                                    }
+                                  
+                                  },
+                                  title: {
+                                    text: 'Monthly Inflation in Argentina, 2002',
+                                    floating: true,
+                                    offsetY: 330,
+                                    align: 'center',
+                                    style: {
+                                      color: '#444'
+                                    }
+                                  }
                                 };
 
-                                  
                                 /* create element forEach table */
                                 let diver = document.createElement('div');
                                 diver.id = 'num_'+i;
