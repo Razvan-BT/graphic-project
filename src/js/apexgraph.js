@@ -1,6 +1,6 @@
 $(document).ready(function () {
-    //let addr = "http://127.0.0.1:1880/realizattakt";
-    let addr = "https://node.formens.ro/realizattakt";
+    let addr = "http://127.0.0.1:1880/realizattakt";
+    // let addr = "https://node.formens.ro/realizattakt";
 
     function GetRequestParam(param) {
         var res = null;
@@ -70,7 +70,7 @@ $(document).ready(function () {
                                 for (let g = 0; g < getTimesArray(6, OUT_DATE, 30).length; g++) 
                                 {
                                     let chartTime = getTimesArray(6, OUT_DATE, 30)[g];
-                                    const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, OUT_DATE, 30)[g])) * 1000).toISOString().slice(11, 19);
+                                    const result = new Date(Math.floor(hmsToSecondsOnly(getTimesArray(6, OUT_DATE, 30)[g])) * 1000).toISOString().slice(11, 16);
                                     categoriesChart.push(result);
 
                                     let d1 = new Date();
@@ -90,20 +90,20 @@ $(document).ready(function () {
                                     const target = getTargetNumber;
 
                                     let targetnow = ((target / 480) * minlucrate);
-
-                                    if (now >= timestringtoDate(chartTime)) dataChart.push(Math.round(targetnow));
+                                    for(let values of Object.values(data.checkpoints[i])) { 
+                                      for (let z = 0; z < Object.entries(data.checkpoints).length; z++) {        
+                                        realChart.push(...[values]); 
+                                      }
+                                    }
+                                    if (now >= timestringtoDate(chartTime)) 
+                                        dataChart.push(Math.round(targetnow));
+                                                                   
                                 }
 
+                                console.log(dataChart);
                                 let newTime = new Date();
                                 let hourTm = newTime.getHours();
                                 if(hourTm > 14) dataChart.pop(); // remove last element from array. after 14:30
-
-                                for(let values of Object.values(data.checkpoints[i])) { 
-                                    for (let z = 0; z < Object.entries(data.checkpoints).length; z++) {        
-                                        realChart.push(...[values]);
-                                    }
-                                }
-                                
 
                                 /* If are more realChart that dataChart make equal between this two. */
                                 if(dataChart.length < realChart[i].length) {
@@ -114,7 +114,8 @@ $(document).ready(function () {
                                 }
                                
                                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
-
+                                
+                                // red less dataChart - green better datachart.
                                 let dataCheck = [];
                                 for(let y = 0; y < dataChart.length; y++) {
                                   dataCheck[y] = {
@@ -122,19 +123,19 @@ $(document).ready(function () {
                                     y: realChart[i][y],
                                     goals: [
                                       {
-                                        name: 'Target count',
+                                        name: 'Target',
                                         value: dataChart[y],
                                         strokeHeight: 5,
-                                        strokeColor: '#775DD0'
+                                        strokeColor: '#775DD0',
                                       }
                                     ]
                                   };
                                 }
-
+                                
                                 var options = {
                                   series: [
                                   {
-                                    name: 'Real count',
+                                    name: 'Real',
                                     data: dataCheck
                                   }
                                 ],
@@ -148,9 +149,9 @@ $(document).ready(function () {
                                     columnWidth: '35%'
                                   }
                                 },
-                                colors: ['#00E396'],
+                                colors: '#f62Cca',
                                 dataLabels: {
-                                  enabled: false
+                                  enabled: true,
                                 },
                                 title: {
                                   style: {
@@ -163,7 +164,7 @@ $(document).ready(function () {
                                 legend: {
                                   show: true,
                                   showForSingleSeries: true,
-                                  customLegendItems: ['Real count', 'Time count'],
+                                  customLegendItems: ['Real', 'Time'],
                                   markers: {
                                     fillColors: ['#00E396', '#775DD0']
                                   }
