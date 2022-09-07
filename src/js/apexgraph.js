@@ -42,7 +42,7 @@ $(document).ready(function () {
                         error: function (err) {
                             window.setTimeout(getDataNode, 15000); // check every 15 sec. internet connection
                             alert('Cannot connect to the server... try again.');
-                            console.error("ERROR: Something was wrong... ");
+                            console.error("ERROR: Something is wrong... ");
                         },
                         success: function (data) {
                             for (let i = 0; i < Object.entries(data.checkpoints).length; i++) 
@@ -122,7 +122,6 @@ $(document).ready(function () {
                                     while(dataChart.length < realChart[i].length);
                                 }
                                
-
                                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
                                 if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
