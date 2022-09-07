@@ -192,7 +192,7 @@ $(document).ready(function () {
                                 var options = {
                                   series: [
                                   {
-                                    name: 'Target count',
+                                    name: 'Real count',
                                     data: dataCheck
                                   }
                                 ],
@@ -212,7 +212,7 @@ $(document).ready(function () {
                                 legend: {
                                   show: true,
                                   showForSingleSeries: true,
-                                  customLegendItems: ['Time count', 'Real count'],
+                                  customLegendItems: ['Real count', 'Time count'],
                                   markers: {
                                     fillColors: ['#00E396', '#775DD0']
                                   }
