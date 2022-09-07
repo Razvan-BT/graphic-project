@@ -197,6 +197,7 @@ $(document).ready(function () {
                                   }
                                 ],
                                   chart: {
+                                  fontFamily: 'Montserrat, sans-serif',
                                   height: 350,
                                   type: 'bar'
                                 },
@@ -208,6 +209,14 @@ $(document).ready(function () {
                                 colors: ['#00E396'],
                                 dataLabels: {
                                   enabled: false
+                                },
+                                title: {
+                                  style: {
+                                    fontSize: '25px',
+                                  },
+                                  text: `${Object.keys(data.checkpoints[i])}`,
+                                  align: 'center', 
+                
                                 },
                                 legend: {
                                   show: true,
