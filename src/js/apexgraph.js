@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    // let addr = "http://127.0.0.1:1880/realizattakt";
+    //let addr = "http://127.0.0.1:1880/realizattakt";
     let addr = "https://node.formens.ro/realizattakt";
 
     function GetRequestParam(param) {
@@ -47,15 +47,10 @@ $(document).ready(function () {
                         success: function (data) {
                             for (let i = 0; i < Object.entries(data.checkpoints).length; i++) 
                             {
-                                const SET_FIRSTHOUR = 6,
-                                    debug_status = false,
-                                    MAX_INT_TIME = 25,
-                                    OUT_DATE = 15;
-                                let checkIfAreThere = 0,
-                                    getTargetNumber,
-                                    theHoursGet = 10,
-                                    finishTime = 0,
-                                    categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakes - 30 minutes.
+                                const debug_status = false,
+                                      OUT_DATE = 15;
+                                let getTargetNumber,
+                                    categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakets - 30 minutes.
                                     dataChart = [], // start with 0 minutes.
                                     realChart = []; // black line
 
@@ -103,10 +98,6 @@ $(document).ready(function () {
                                 let hourTm = newTime.getHours();
                                 if(hourTm > 14) dataChart.pop(); // remove last element from array. after 14:30
 
-                                /* Update de Y Axis (How blue line are calc from getTimeRemain)  */
-                                for (let d = 0; d < dataChart.length; d++) { checkIfAreThere = d; }
-                                if (theHoursGet > 0) theHoursGet += (checkIfAreThere * MAX_INT_TIME);
-
                                 for(let values of Object.values(data.checkpoints[i])) { 
                                     for (let z = 0; z < Object.entries(data.checkpoints).length; z++) {        
                                         realChart.push(...[values]);
@@ -123,7 +114,6 @@ $(document).ready(function () {
                                 }
                                
                                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
-                                if (debug_status) console.log("debug: checkIfAreThere: " + checkIfAreThere);
 
                                 let dataCheck = [];
                                 for(let y = 0; y < dataChart.length; y++) {
