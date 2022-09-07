@@ -185,9 +185,9 @@ $(document).ready(function () {
                                 diver.id = 'num_'+i;
                                 let checkParent = document.getElementById('chart');
                                 checkParent.appendChild(diver);
-                                
+
                                 let chart = new ApexCharts(diver, options);
-                                chart.render();
+                                chart.render(); 
                             }
                             $("#progress").addClass("done");
                             console.warn('Successfully page loaded!');
