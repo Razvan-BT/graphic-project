@@ -127,19 +127,18 @@ $(document).ready(function () {
                       }
                     ]
                   };
+                }
 
-                  colorChange = {
-                    colors: [function ({ value, seriesIndex, w }) {
-
-                        if (value < dataChart[i]) {
-                          return '#04b063'
-                        } else if (value >= dataChart[i]) {
-                          return '#b00404'
-                        }
-
+                dataChart.every((elem, index, arr) => {
+                  colorChange = {             
+                    colors: [function ({ value , seriesIndex, w }) {
+                      if (value < elem) return '#b00404'
+                      else return '#04b063'
+                      // 
                     }]
                   }
-                }
+                });
+                
                 var options = {
                   series: [
                     {
