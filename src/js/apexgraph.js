@@ -171,7 +171,7 @@ $(document).ready(function () {
                                 //     }
                                 //   }]
                                 // };
-                                // am facuto si pe asta. :D
+                        
 
                                 let dataCheck = [];
                                 for(let y = 0; y < dataChart.length; y++) {
