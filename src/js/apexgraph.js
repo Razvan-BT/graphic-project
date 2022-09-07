@@ -22,10 +22,9 @@ $(document).ready(function () {
     function getDataNode() {
         //debugger;
         let locatedId = GetRequestParam("loc");
-        ExtractDacaFromNodeRed(locatedId);
+        ExtractDataFromNodeRed(locatedId);
 
-        function ExtractDacaFromNodeRed() {
-            let loc = GetRequestParam("loc");
+        function ExtractDataFromNodeRed(loc) {
             $({property: 0}).animate({property: 105}, {
                 duration: 200, // 200 ms.
                 step: function() {
@@ -118,7 +117,7 @@ $(document).ready(function () {
                                 /* If are more realChart that dataChart make equal between this two. */
                                 if(dataChart.length < realChart[i].length) {
                                     do {
-                                        realChart[i].pop();
+                                      realChart[i].pop();
                                     }
                                     while(dataChart.length < realChart[i].length);
                                 }
