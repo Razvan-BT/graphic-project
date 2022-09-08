@@ -51,7 +51,6 @@ $(document).ready(function () {
                 let getTargetNumber,
                   categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakets - 30 minutes.
                   dataChart = [], // start with 0 minutes.
-                  checkData = [],
                   realChart = []; // black line
 
                 getTargetNumber = Number(data.target);
@@ -98,11 +97,6 @@ $(document).ready(function () {
 
                 }
 
-                // checkData.push(...[[1, [2]]]);
-                // console.log(checkData[0][1]);
-
-
-
                 let newTime = new Date();
                 let hourTm = newTime.getHours();
                 if (hourTm > 14) dataChart.pop(); // remove last element from array. after 14:30
@@ -117,12 +111,14 @@ $(document).ready(function () {
 
                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
 
+                /* Change color for each column with value better than dataChart (time)  */
+                // red less dataChart - green better datachart.
                 let dataCheck = [],
                   chkCl = [],
                   chkClRespond = [],
                   colorCheck = [];
 
-                chkClRespond.push(...dataChart);
+                chkClRespond.push(...dataChart); // L-am facut aiurea... era destul dataChart....
                 for (let y = 0; y < dataChart.length; y++) {
                   dataCheck[y] = {
                     x: categoriesChart[y],
@@ -138,9 +134,6 @@ $(document).ready(function () {
                   };
                 }
 
-
-                /* Change color for each column with value better than dataChart (time)  */
-                // red less dataChart - green better datachart.
                 for (let x = 0; x < chkClRespond.length; x++) {
                   chkCl.push(...[
                     function ({value, seriesIndex, dataPointIndex, w }) {
