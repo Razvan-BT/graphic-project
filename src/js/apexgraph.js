@@ -1,6 +1,6 @@
 $(document).ready(function () {
-  let addr = "http://127.0.0.1:1880/realizattakt";
-  // let addr = "https://node.formens.ro/realizattakt";
+  // let addr = "http://127.0.0.1:1880/realizattakt";
+  let addr = "https://node.formens.ro/realizattakt";
 
   function GetRequestParam(param) {
     var res = null;
@@ -134,10 +134,11 @@ $(document).ready(function () {
                   };
                 }
 
+
+                /* ----------- [This LOOP add red bar or green bar] ----------------------------- */
                 for (let x = 0; x < chkClRespond.length; x++) {
                   chkCl.push(...[
-                    function ({value, seriesIndex, dataPointIndex, w }) {
-                      console.log(value);
+                    function ({ value, seriesIndex, dataPointIndex, w }) {
                       if (value < dataChart[dataPointIndex]) {
                         return '#f21616'
                       } if (value > dataChart[dataPointIndex]) {
@@ -146,12 +147,12 @@ $(document).ready(function () {
                       else return '#06cf67'
                     }
                   ]);
-                  // console.log('CHECK IF ARE OK ', chhhc++); // :/
                 }
 
                 colorCheck = {
                   colors: chkCl
                 }
+
                 // console.log(chkCl);
                 // Id - data for each element from Id (Table) -> result Color for each element
 
@@ -172,7 +173,7 @@ $(document).ready(function () {
                       columnWidth: '35%'
                     }
                   },
-                  fill:  colorCheck,
+                  fill: colorCheck,
                   dataLabels: {
                     enabled: true,
                   },
