@@ -51,6 +51,7 @@ $(document).ready(function () {
                 let getTargetNumber,
                   categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakets - 30 minutes.
                   dataChart = [], // start with 0 minutes.
+                  checkData = [],
                   realChart = []; // black line
 
                 getTargetNumber = Number(data.target);
@@ -97,6 +98,11 @@ $(document).ready(function () {
 
                 }
 
+                // checkData.push(...[[1, [2]]]);
+                // console.log(checkData[0][1]);
+
+
+
                 let newTime = new Date();
                 let hourTm = newTime.getHours();
                 if (hourTm > 14) dataChart.pop(); // remove last element from array. after 14:30
@@ -111,9 +117,12 @@ $(document).ready(function () {
 
                 if (debug_status) console.log("debug: dataChart: " + dataChart.length);
 
-                // red less dataChart - green better datachart.
                 let dataCheck = [],
-                  colorChange = [];
+                  chkCl = [],
+                  chkClRespond = [],
+                  colorCheck = [];
+
+                chkClRespond.push(...dataChart);
                 for (let y = 0; y < dataChart.length; y++) {
                   dataCheck[y] = {
                     x: categoriesChart[y],
@@ -129,16 +138,30 @@ $(document).ready(function () {
                   };
                 }
 
-                dataChart.every((elem, index, arr) => {
-                  colorChange = {             
-                    colors: [function ({ value , seriesIndex, w }) {
-                      if (value < elem) return '#b00404'
-                      else return '#04b063'
-                      // 
-                    }]
-                  }
-                });
-                
+
+                /* Change color for each column with value better than dataChart (time)  */
+                // red less dataChart - green better datachart.
+                for (let x = 0; x < chkClRespond.length; x++) {
+                  chkCl.push(...[
+                    function ({value, seriesIndex, dataPointIndex, w }) {
+                      console.log(value);
+                      if (value < dataChart[dataPointIndex]) {
+                        return '#f21616'
+                      } if (value > dataChart[dataPointIndex]) {
+                        return '#06cf67'
+                      }
+                      else return '#06cf67'
+                    }
+                  ]);
+                  // console.log('CHECK IF ARE OK ', chhhc++); // :/
+                }
+
+                colorCheck = {
+                  colors: chkCl
+                }
+                // console.log(chkCl);
+                // Id - data for each element from Id (Table) -> result Color for each element
+
                 var options = {
                   series: [
                     {
@@ -156,7 +179,7 @@ $(document).ready(function () {
                       columnWidth: '35%'
                     }
                   },
-                  fill: colorChange,
+                  fill:  colorCheck,
                   dataLabels: {
                     enabled: true,
                   },
@@ -177,6 +200,7 @@ $(document).ready(function () {
                     }
                   }
                 };
+
                 /* create element forEach table */
                 let diver = document.createElement('div');
                 diver.id = 'num_' + i;
