@@ -134,7 +134,6 @@ $(document).ready(function () {
                   };
                 }
 
-
                 /* ----------- [This LOOP add red bar or green bar] ----------------------------- */
                 for (let x = 0; x < chkClRespond.length; x++) {
                   chkCl.push(...[
@@ -153,6 +152,7 @@ $(document).ready(function () {
                   colors: chkCl
                 }
 
+                console.trace(colorCheck);
                 // console.log(chkCl);
                 // Id - data for each element from Id (Table) -> result Color for each element
 
@@ -188,9 +188,9 @@ $(document).ready(function () {
                   legend: {
                     show: true,
                     showForSingleSeries: true,
-                    customLegendItems: ['Real', 'Time'],
+                    customLegendItems: ['Real', 'Real', 'Target'],
                     markers: {
-                      fillColors: ['#00E396', '#775DD0']
+                      fillColors: ['#f21616', '#06cf67' , '#775DD0']
                     }
                   }
                 };
