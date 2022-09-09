@@ -49,6 +49,7 @@ $(document).ready(function () {
                 const debug_status = false,
                   OUT_DATE = 15;
                 let getTargetNumber,
+                  titleName,
                   categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakets - 30 minutes.
                   dataChart = [], // start with 0 minutes.
                   realChart = []; // black line
@@ -95,6 +96,8 @@ $(document).ready(function () {
                   if (now >= timestringtoDate(chartTime))
                     dataChart.push(...[Math.round(targetnow)]);
 
+                  titleName = Object.keys(data.checkpoints[i]);
+
                 }
 
                 let newTime = new Date();
@@ -115,8 +118,6 @@ $(document).ready(function () {
                 // red less dataChart - green better datachart.
                 let dataCheck = [],
                   chkCl = [],
-                  ChkDataLabel = [],
-                  chkDlValue = [],
                   chkClRespond = [],
                   colorCheck = [];
 
@@ -134,19 +135,9 @@ $(document).ready(function () {
                       }
                     ]
                   };
-
-                  /* Filtre data on graphic  */
-
-                  chkDlValue.push(...[
-                    function ({ value, seriesIndex, dataPointIndex, w }) {
-                      if (value < dataChart[dataPointIndex]) {                  
-                   
-                      } if (value > dataChart[dataPointIndex]) {
-                    
-                      }         
-                    }
-                  ]);
                 }
+
+
 
                 /* ----------- [This LOOP add red bar or green bar] ----------------------------- */
                 for (let x = 0; x < chkClRespond.length; x++) {
@@ -196,7 +187,7 @@ $(document).ready(function () {
                     type: 'category',
                     categories: [],
                     tickAmount: undefined,
-                    tickPlacement: 'between',
+                    tickPlacement: 'on',
                     min: undefined,
                     max: undefined,
                     range: undefined,
@@ -301,18 +292,18 @@ $(document).ready(function () {
                     },
                   },
                   dataLabels: {
-                    formatter: function(val, opt) {
+                    formatter: function (val, opt) { /// calculeaza diff +/-
                       const goals =
                         opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex]
                           .goals
-                      let checkNumber; 
+                      let checkNumber;
                       if (goals && goals.length) {
-                        if(goals > goals.length) { 
-                          checkNumber = goals[0].value - val; 
+                        if (goals > goals.length) {
+                          checkNumber = goals[0].value - val;
                           return checkNumber;
                         }
-                        else { 
-                          checkNumber = val - goals[0].value; 
+                        else {
+                          checkNumber = val - goals[0].value;
                           return checkNumber;
                         }
                       }
@@ -329,7 +320,7 @@ $(document).ready(function () {
                     style: {
                       fontSize: '20px',
                     },
-                    text: `${Object.keys(data.checkpoints[i])}`,
+                    text: titleName,
                     align: 'center',
 
                   },
