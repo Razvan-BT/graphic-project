@@ -135,9 +135,9 @@ $(document).ready(function () {
                       }
                     ]
                   };
+
+                  /* Filtre data on graphic  */
                 }
-
-
 
                 /* ----------- [This LOOP add red bar or green bar] ----------------------------- */
                 for (let x = 0; x < chkClRespond.length; x++) {
@@ -175,7 +175,7 @@ $(document).ready(function () {
                   },
                   plotOptions: {
                     bar: {
-                      columnWidth: '95%',
+                      columnWidth: '85%',
                       horizontal: false,
                       dataLabels: {
                         position: 'center',
@@ -187,7 +187,7 @@ $(document).ready(function () {
                     type: 'category',
                     categories: [],
                     tickAmount: undefined,
-                    tickPlacement: 'on',
+                    tickPlacement: 'between',
                     min: undefined,
                     max: undefined,
                     range: undefined,
@@ -254,7 +254,7 @@ $(document).ready(function () {
                     },
                     crosshairs: {
                       show: true,
-                      width: 1,
+                      width:1,
                       position: 'back',
                       opacity: 0.9,
                       stroke: {
@@ -292,33 +292,31 @@ $(document).ready(function () {
                     },
                   },
                   dataLabels: {
-                    formatter: function (val, opt) { /// calculeaza diff +/-
+                    formatter: function (val, opt) {
                       const goals =
                         opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex]
                           .goals
-                      let checkNumber;
+
                       if (goals && goals.length) {
                         if (goals > goals.length) {
-                          checkNumber = goals[0].value - val;
-                          return checkNumber;
+                          return goals[0].value - val;;
                         }
                         else {
-                          checkNumber = val - goals[0].value;
-                          return checkNumber;
+                          return val - goals[0].value;
                         }
                       }
                       else return val
+
                     },
                     enabled: true,
                     style: {
                       fontSize: '11px',
                       colors: ['#000'],
-                      round: -90,
                     }
                   },
                   title: {
                     style: {
-                      fontSize: '20px',
+                      fontSize: '22px',
                     },
                     text: titleName,
                     align: 'center',
