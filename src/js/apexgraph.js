@@ -115,6 +115,8 @@ $(document).ready(function () {
                 // red less dataChart - green better datachart.
                 let dataCheck = [],
                   chkCl = [],
+                  ChkDataLabel = [],
+                  chkDlValue = [],
                   chkClRespond = [],
                   colorCheck = [];
 
@@ -132,6 +134,18 @@ $(document).ready(function () {
                       }
                     ]
                   };
+
+                  /* Filtre data on graphic  */
+
+                  chkDlValue.push(...[
+                    function ({ value, seriesIndex, dataPointIndex, w }) {
+                      if (value < dataChart[dataPointIndex]) {                  
+                   
+                      } if (value > dataChart[dataPointIndex]) {
+                    
+                      }         
+                    }
+                  ]);
                 }
 
                 /* ----------- [This LOOP add red bar or green bar] ----------------------------- */
@@ -139,6 +153,7 @@ $(document).ready(function () {
                   chkCl.push(...[
                     function ({ value, seriesIndex, dataPointIndex, w }) {
                       if (value < dataChart[dataPointIndex]) {
+                        value = dataChart[dataPointIndex] - value;
                         return '#f21616'
                       } if (value > dataChart[dataPointIndex]) {
                         return '#06cf67'
@@ -152,34 +167,167 @@ $(document).ready(function () {
                   colors: chkCl
                 }
 
-                console.trace(colorCheck);
-                // console.log(chkCl);
                 // Id - data for each element from Id (Table) -> result Color for each element
 
                 var options = {
                   series: [
                     {
                       name: 'Real',
-                      data: dataCheck
+                      data: dataCheck,
+                      // valTest: [[1], [2]]
                     }
                   ],
                   chart: {
                     fontFamily: 'Montserrat, sans-serif',
-                    height: 350,
-                    type: 'bar'
+                    height: 450,
+                    type: 'bar',
                   },
                   plotOptions: {
                     bar: {
-                      columnWidth: '35%'
+                      columnWidth: '95%',
+                      horizontal: false,
+                      dataLabels: {
+                        position: 'center',
+                      },
                     }
                   },
                   fill: colorCheck,
+                  xaxis: {
+                    type: 'category',
+                    categories: [],
+                    tickAmount: undefined,
+                    tickPlacement: 'between',
+                    min: undefined,
+                    max: undefined,
+                    range: undefined,
+                    floating: false,
+                    decimalsInFloat: undefined,
+                    overwriteCategories: undefined,
+                    position: 'bottom',
+                    labels: {
+                      show: true,
+                      rotate: -75,
+                      rotateAlways: false,
+                      hideOverlappingLabels: true,
+                      showDuplicates: false,
+                      trim: false,
+                      minHeight: undefined,
+                      maxHeight: 120,
+                      style: {
+                        colors: [],
+                        fontSize: '12px',
+                        fontFamily: 'Montserrat, Arial, sans-serif',
+                        fontWeight: 400,
+                        cssClass: 'apexcharts-xaxis-label',
+                      },
+                      offsetX: 0,
+                      offsetY: 0,
+                      format: undefined,
+                      formatter: undefined,
+                      datetimeUTC: true,
+                      datetimeFormatter: {
+                        year: 'yyyy',
+                        month: "MMM 'yy",
+                        day: 'dd MMM',
+                        hour: 'HH:mm',
+                      },
+                    },
+                    axisBorder: {
+                      show: true,
+                      color: '#78909C',
+                      height: 1,
+                      width: '100%',
+                      offsetX: 0,
+                      offsetY: 0
+                    },
+                    axisTicks: {
+                      show: true,
+                      borderType: 'solid',
+                      color: '#78909C',
+                      height: 6,
+                      offsetX: 0,
+                      offsetY: 0
+                    },
+
+                    title: {
+                      text: undefined,
+                      offsetX: 0,
+                      offsetY: 0,
+                      style: {
+                        color: undefined,
+                        fontSize: '12px',
+                        fontFamily: 'Helvetica, Arial, sans-serif',
+                        fontWeight: 600,
+                        cssClass: 'apexcharts-xaxis-title',
+                      },
+                    },
+                    crosshairs: {
+                      show: true,
+                      width: 1,
+                      position: 'back',
+                      opacity: 0.9,
+                      stroke: {
+                        color: '#b6b6b6',
+                        width: 0,
+                        dashArray: 0,
+                      },
+                      fill: {
+                        type: 'solid',
+                        color: '#B1B9C4',
+                        gradient: {
+                          colorFrom: '#D8E3F0',
+                          colorTo: '#BED1E6',
+                          stops: [0, 100],
+                          opacityFrom: 0.4,
+                          opacityTo: 0.5,
+                        },
+                      },
+                      dropShadow: {
+                        enabled: false,
+                        top: 0,
+                        left: 0,
+                        blur: 1,
+                        opacity: 0.4,
+                      },
+                    },
+                    tooltip: {
+                      enabled: false,
+                      formatter: undefined,
+                      offsetY: 0,
+                      style: {
+                        fontSize: 0,
+                        fontFamily: 0,
+                      },
+                    },
+                  },
                   dataLabels: {
+                    formatter: function(val, opt) {
+                      const goals =
+                        opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex]
+                          .goals
+                      let checkNumber; 
+                      if (goals && goals.length) {
+                        if(goals > goals.length) { 
+                          checkNumber = goals[0].value - val; 
+                          return checkNumber;
+                        }
+                        else { 
+                          checkNumber = val - goals[0].value; 
+                          return checkNumber;
+                        }
+                      }
+                      else return val
+                    },
                     enabled: true,
+                    style: {
+                      fontSize: '11px',
+                      colors: ['#000'],
+                      round: -90,
+                    }
                   },
                   title: {
                     style: {
-                      fontSize: '25px',
+                      fontSize: '20px',
                     },
                     text: `${Object.keys(data.checkpoints[i])}`,
                     align: 'center',
@@ -190,7 +338,7 @@ $(document).ready(function () {
                     showForSingleSeries: true,
                     customLegendItems: ['Real', 'Real', 'Target'],
                     markers: {
-                      fillColors: ['#f21616', '#06cf67' , '#775DD0']
+                      fillColors: ['#06cf67', '#f21616', '#775DD0']
                     }
                   }
                 };
