@@ -18,6 +18,7 @@ $(document).ready(function () {
     return res;
   }
 
+  setInterval(getDataNode, (60 * 1000) * 15); // update every at 15 minutes.
   getDataNode();
   function getDataNode() {
     //debugger;
@@ -158,6 +159,8 @@ $(document).ready(function () {
                   colors: chkCl
                 }
 
+
+                // console.log(realChart);
                 // Id - data for each element from Id (Table) -> result Color for each element
 
                 var options = {
@@ -176,7 +179,7 @@ $(document).ready(function () {
                   plotOptions: {
                     bar: {
                       columnWidth: '85%',
-                      horizontal: false,
+                      // horizontal: false,
                       dataLabels: {
                         position: 'center',
                       },
