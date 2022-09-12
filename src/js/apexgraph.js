@@ -387,3 +387,8 @@ $(document).ready(function () {
   };
 });
 
+/*
+- Calibrare.
+- instalare pe remote acelasii font.
+
+*/
