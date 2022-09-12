@@ -18,7 +18,7 @@ $(document).ready(function () {
     return res;
   }
 
-  setInterval(getDataNode, (60 * 1000) * 15); // update every at 15 minutes.
+  setInterval(getDataNode, (60 * 1000) * 15); // update every at 15 minutes. --- OLD // every 15 minutes.
   getDataNode();
   function getDataNode() {
     //debugger;
@@ -52,8 +52,8 @@ $(document).ready(function () {
                 let getTargetNumber,
                   titleName,
                   categoriesChart = new Array(), // legend - time in half hour: 6:00, 6:30, 7:30 ... 16:30 without brakets - 30 minutes.
-                  dataChart = [], // start with 0 minutes.
-                  realChart = []; // black line
+                  dataChart = [], // start with 0 minutes / target.
+                  realChart = []; // how many maked inline
 
                 getTargetNumber = Number(data.target);
 
@@ -136,10 +136,8 @@ $(document).ready(function () {
                       }
                     ]
                   };
-
-                  /* Filtre data on graphic  */
                 }
-
+        
                 /* ----------- [This LOOP add red bar or green bar] ----------------------------- */
                 for (let x = 0; x < chkClRespond.length; x++) {
                   chkCl.push(...[
@@ -158,10 +156,6 @@ $(document).ready(function () {
                 colorCheck = {
                   colors: chkCl
                 }
-
-
-                // console.log(realChart);
-                // Id - data for each element from Id (Table) -> result Color for each element
 
                 var options = {
                   series: [
