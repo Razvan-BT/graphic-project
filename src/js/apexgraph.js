@@ -18,7 +18,7 @@ $(document).ready(function () {
     return res;
   }
 
-  setInterval(getDataNode, (60 * 1000) * 15); // update every at 15 minutes. --- OLD // every 15 minutes.
+  setInterval(getDataNode, 60 * 1000); // update every at 15 minutes. --- OLD // every 15 minutes.
   getDataNode();
   function getDataNode() {
     //debugger;
